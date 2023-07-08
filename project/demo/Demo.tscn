@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://cgqo2wpjcdhm1"]
+
+[node name="Demo" type="Node2D"]
+
+[node name="BulletML" type="BulletML" parent="."]
+file = "res://demo/examples/sample.xml"
+bullet_file = "res://demo/Bullet.tscn"
+position = Vector2(569, 158)

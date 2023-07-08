@@ -1,0 +1,8 @@
+workaround_configfile_load_bug = 1
+
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.1
+
+[libraries]
+windows.debug.x86_64 = "bin/libbulletml.windows.debug.x86_64.dll"

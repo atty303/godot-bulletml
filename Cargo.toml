@@ -3,6 +3,9 @@ name = "godot-bulletml"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib"]
 
 [dependencies]
+godot = { git = "https://github.com/godot-rust/gdext", rev = "5d6725f45cbf7edfaf313385b0d05c1375e85eb5" }
+bulletml = "0.2.1"

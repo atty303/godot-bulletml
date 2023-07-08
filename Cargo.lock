@@ -3,5 +3,289 @@
 version = 3
 
 [[package]]
+name = "aho-corasick"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43f6cb1bf222025340178f382c426f13757b2960e89779dfcb319c32542a5a41"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
+name = "bulletml"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6edeb27767273db94f8308a024d1b90254a42291a538a48e848789027584a3fe"
+dependencies = [
+ "derive-new",
+ "fasteval",
+ "indextree",
+ "regex",
+ "roxmltree",
+ "thiserror",
+]
+
+[[package]]
+name = "derive-new"
+version = "0.5.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3418329ca0ad70234b9735dc4ceed10af4df60eff9c8e7b06cb5e520d92c3535"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "fasteval"
+version = "0.2.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f4cdac9e4065d7c48e30770f8665b8cef9a3a73a63a4056a33a5f395bc7cf75"
+
+[[package]]
+name = "glam"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8e4afd9ad95555081e109fe1d21f2a30c691b5f0919c67dfa690a2e1eb6bd51c"
+
+[[package]]
+name = "godot"
+version = "0.1.0"
+source = "git+https://github.com/godot-rust/gdext?rev=5d6725f45cbf7edfaf313385b0d05c1375e85eb5#5d6725f45cbf7edfaf313385b0d05c1375e85eb5"
+dependencies = [
+ "godot-core",
+ "godot-macros",
+]
+
+[[package]]
+name = "godot-bindings"
+version = "0.1.0"
+source = "git+https://github.com/godot-rust/gdext?rev=5d6725f45cbf7edfaf313385b0d05c1375e85eb5#5d6725f45cbf7edfaf313385b0d05c1375e85eb5"
+dependencies = [
+ "godot4-prebuilt",
+]
+
+[[package]]
 name = "godot-bulletml"
 version = "0.1.0"
+dependencies = [
+ "bulletml",
+ "godot",
+]
+
+[[package]]
+name = "godot-codegen"
+version = "0.1.0"
+source = "git+https://github.com/godot-rust/gdext?rev=5d6725f45cbf7edfaf313385b0d05c1375e85eb5#5d6725f45cbf7edfaf313385b0d05c1375e85eb5"
+dependencies = [
+ "godot-bindings",
+ "godot-fmt",
+ "heck",
+ "nanoserde",
+ "proc-macro2",
+ "quote",
+ "regex",
+]
+
+[[package]]
+name = "godot-core"
+version = "0.1.0"
+source = "git+https://github.com/godot-rust/gdext?rev=5d6725f45cbf7edfaf313385b0d05c1375e85eb5#5d6725f45cbf7edfaf313385b0d05c1375e85eb5"
+dependencies = [
+ "glam",
+ "godot-bindings",
+ "godot-codegen",
+ "godot-ffi",
+]
+
+[[package]]
+name = "godot-ffi"
+version = "0.1.0"
+source = "git+https://github.com/godot-rust/gdext?rev=5d6725f45cbf7edfaf313385b0d05c1375e85eb5#5d6725f45cbf7edfaf313385b0d05c1375e85eb5"
+dependencies = [
+ "godot-bindings",
+ "godot-codegen",
+ "paste",
+]
+
+[[package]]
+name = "godot-fmt"
+version = "0.1.0"
+source = "git+https://github.com/godot-rust/gdext?rev=5d6725f45cbf7edfaf313385b0d05c1375e85eb5#5d6725f45cbf7edfaf313385b0d05c1375e85eb5"
+dependencies = [
+ "proc-macro2",
+]
+
+[[package]]
+name = "godot-macros"
+version = "0.1.0"
+source = "git+https://github.com/godot-rust/gdext?rev=5d6725f45cbf7edfaf313385b0d05c1375e85eb5#5d6725f45cbf7edfaf313385b0d05c1375e85eb5"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "venial",
+]
+
+[[package]]
+name = "godot4-prebuilt"
+version = "0.0.0"
+source = "git+https://github.com/godot-rust/godot4-prebuilt?branch=4.1#23477b8096a90c3798ab3558b776e9743e59ea2a"
+
+[[package]]
+name = "heck"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95505c38b4572b2d910cecb0281560f54b440a19336cbbcb27bf6ce6adc6f5a8"
+
+[[package]]
+name = "indextree"
+version = "4.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c40411d0e5c63ef1323c3d09ce5ec6d84d71531e18daed0743fccea279d7deb6"
+
+[[package]]
+name = "memchr"
+version = "2.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
+
+[[package]]
+name = "nanoserde"
+version = "0.1.32"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "755e7965536bc54d7c9fba2df5ada5bf835b0443fd613f0a53fa199a301839d3"
+dependencies = [
+ "nanoserde-derive",
+]
+
+[[package]]
+name = "nanoserde-derive"
+version = "0.1.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed7a94da6c6181c35d043fc61c43ac96d3a5d739e7b8027f77650ba41504d6ab"
+
+[[package]]
+name = "paste"
+version = "1.0.13"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4b27ab7be369122c218afc2079489cdcb4b517c0a3fc386ff11e1fedfcc2b35"
+
+[[package]]
+name = "proc-macro2"
+version = "1.0.63"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7b368fba921b0dce7e60f5e04ec15e565b3303972b42bcfde1d0713b881959eb"
+dependencies = [
+ "unicode-ident",
+]
+
+[[package]]
+name = "quote"
+version = "1.0.29"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "573015e8ab27661678357f27dc26460738fd2b6c86e46f386fde94cb5d913105"
+dependencies = [
+ "proc-macro2",
+]
+
+[[package]]
+name = "regex"
+version = "1.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b2eae68fc220f7cf2532e4494aded17545fce192d59cd996e0fe7887f4ceb575"
+dependencies = [
+ "aho-corasick",
+ "memchr",
+ "regex-automata",
+ "regex-syntax",
+]
+
+[[package]]
+name = "regex-automata"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83d3daa6976cffb758ec878f108ba0e062a45b2d6ca3a2cca965338855476caf"
+dependencies = [
+ "aho-corasick",
+ "memchr",
+ "regex-syntax",
+]
+
+[[package]]
+name = "regex-syntax"
+version = "0.7.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2ab07dc67230e4a4718e70fd5c20055a4334b121f1f9db8fe63ef39ce9b8c846"
+
+[[package]]
+name = "roxmltree"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "99d696b20b92d3e02e08fd8456f0ab03007c99e6b111a6205b9cb6fc044d0957"
+dependencies = [
+ "xmlparser",
+]
+
+[[package]]
+name = "syn"
+version = "1.0.109"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "72b64191b275b66ffe2469e8af2c1cfe3bafa67b529ead792a6d0160888b4237"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "unicode-ident",
+]
+
+[[package]]
+name = "syn"
+version = "2.0.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "59fb7d6d8281a51045d62b8eb3a7d1ce347b76f312af50cd3dc0af39c87c1737"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "unicode-ident",
+]
+
+[[package]]
+name = "thiserror"
+version = "1.0.43"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a35fc5b8971143ca348fa6df4f024d4d55264f3468c71ad1c2f365b0a4d58c42"
+dependencies = [
+ "thiserror-impl",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "1.0.43"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "463fe12d7993d3b327787537ce8dd4dfa058de32fc2b195ef3cde03dc4771e8f"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.23",
+]
+
+[[package]]
+name = "unicode-ident"
+version = "1.0.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22049a19f4a68748a168c0fc439f9516686aa045927ff767eca0a85101fb6e73"
+
+[[package]]
+name = "venial"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "61584a325b16f97b5b25fcc852eb9550843a251057a5e3e5992d2376f3df4bb2"
+dependencies = [
+ "proc-macro2",
+ "quote",
+]
+
+[[package]]
+name = "xmlparser"
+version = "0.13.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4d25c75bf9ea12c4040a97f829154768bbbce366287e2dc044af160cd79a13fd"
