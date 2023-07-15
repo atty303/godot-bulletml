@@ -6,6 +6,7 @@ use crate::resource::BulletMLResourceFormatLoader;
 
 mod bulletml;
 mod resource;
+mod plugin;
 
 struct BulletMLExtension {
     loader: Option<Gd<BulletMLResourceFormatLoader>>,
