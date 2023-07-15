@@ -16,7 +16,7 @@ func _parse_begin(object):
 	var viewport := preview.get_node("SubViewportContainer/SubViewport") as SubViewport
 	viewport.set_size(Vector2i(w, h))
 	
-	var bulletml := preview.get_node("SubViewportContainer/SubViewport/BulletMLNode") as BulletMLNode
+	var bulletml := preview.get_node("SubViewportContainer/SubViewport/BulletMLPlayer") as BulletMLPlayer
 	bulletml.set_file(object)
 	
 	add_custom_control(preview)

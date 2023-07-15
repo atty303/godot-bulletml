@@ -9,7 +9,7 @@ use crate::resource::BulletML;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
-struct BulletMLNode {
+struct BulletMLPlayer {
     #[base]
     base: Base<Node2D>,
 
@@ -23,13 +23,13 @@ struct BulletMLNode {
 }
 
 #[godot_api]
-impl BulletMLNode {
+impl BulletMLPlayer {
     fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, state: Option<State>) {
         // if self.file.is_none() {
         //     return;
         // }
 
-        let top = self.get_node_as::<BulletMLNode>(".");
+        let top = self.get_node_as::<BulletMLPlayer>(".");
         let child = self.bullet_scene.instantiate_as::<Node2D>();
 
         let bml = self.file.as_ref().unwrap().bind().bml.clone();
@@ -50,7 +50,7 @@ impl BulletMLNode {
 }
 
 #[godot_api]
-impl Node2DVirtual for BulletMLNode {
+impl Node2DVirtual for BulletMLPlayer {
     fn init(base: Base<Node2D>) -> Self {
         Self {
             base,
@@ -82,7 +82,7 @@ struct Bullet {
     #[base]
     base: Base<Node2D>,
 
-    root: Gd<BulletMLNode>,
+    root: Gd<BulletMLPlayer>,
     presentation: Gd<Node2D>,
     bml: Rc<bulletml::BulletML>,
     runner: Runner<GodotRunner>,
@@ -93,7 +93,7 @@ struct Bullet {
 
 #[godot_api]
 impl Bullet {
-    fn new(base: Base<Node2D>, root: Gd<BulletMLNode>, presentation: Gd<Node2D>, bml: Rc<bulletml::BulletML>, is_simple: bool) -> Self {
+    fn new(base: Base<Node2D>, root: Gd<BulletMLPlayer>, presentation: Gd<Node2D>, bml: Rc<bulletml::BulletML>, is_simple: bool) -> Self {
         Self {
             base,
             root,
@@ -147,7 +147,7 @@ struct BulletImpl {
 }
 
 struct GodotData<'a> {
-    root: Gd<BulletMLNode>,
+    root: Gd<BulletMLPlayer>,
     bullet: &'a mut BulletImpl,
 }
 
