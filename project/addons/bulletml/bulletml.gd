@@ -3,7 +3,6 @@ extends EditorPlugin
 
 const EditorPanel = preload("res://addons/bulletml/Editor.tscn")
 
-var import_plugin: EditorImportPlugin = preload("res://addons/bulletml/import.gd").new()
 var inspector_plugin: EditorInspectorPlugin
 var editor_panel
 
@@ -11,8 +10,6 @@ func _enter_tree():
 	# Initialization of the plugin goes here.
 	inspector_plugin = preload("res://addons/bulletml/inspector.gd").new()
 	add_inspector_plugin(inspector_plugin)
-	
-	add_import_plugin(import_plugin)
 	
 	editor_panel = EditorPanel.instantiate()
 	get_editor_interface().get_editor_main_screen().add_child(editor_panel)
@@ -25,7 +22,6 @@ func _enter_tree():
 func _exit_tree():
 	# Clean-up of the plugin goes here.
 	remove_inspector_plugin(inspector_plugin)
-	remove_import_plugin(import_plugin)
 	
 	if editor_panel:
 		editor_panel.queue_free()

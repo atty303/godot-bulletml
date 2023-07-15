@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use bulletml::parse::BulletMLParser;
-use godot::engine::{FileAccess, ResourceFormatLoader, ResourceFormatLoaderVirtual, ResourceFormatSaver, ResourceFormatSaverVirtual};
+use godot::engine::{FileAccess, ResourceFormatLoader, ResourceFormatLoaderVirtual};
 use godot::engine::global::Error;
 use godot::prelude::*;
 
@@ -11,21 +11,14 @@ pub struct BulletML {
     #[base]
     base: Base<Resource>,
 
-    pub bml: Rc<bulletml::BulletML>,
-
     #[export]
     pub bullet_scenes: Array<Gd<PackedScene>>,
+
+    pub bml: Rc<bulletml::BulletML>,
 }
 
 #[godot_api]
 impl BulletML {
-    pub fn new(base: Base<Resource>, bml: Rc<bulletml::BulletML>) -> Self {
-        Self {
-            base,
-            bml,
-            bullet_scenes: array![],
-        }
-    }
 }
 
 #[godot_api]
@@ -60,8 +53,12 @@ impl BulletMLResourceFormatLoader {
 #[godot_api]
 impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
     fn get_recognized_extensions(&self) -> PackedStringArray {
-        PackedStringArray::from(&[GodotString::from("bml")])
+        PackedStringArray::from(&[GodotString::from("xml")])
     }
+
+    // fn recognize_path(&self, path: GodotString, type_: StringName) -> bool {
+    //     type_ == StringName::from("BulletMLFile")
+    // }
 
     fn handles_type(&self, type_: StringName) -> bool {
         type_ == StringName::from("BulletML")
@@ -70,6 +67,30 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
     fn get_resource_type(&self, _path: GodotString) -> GodotString {
         GodotString::from("BulletML")
     }
+
+    // fn get_resource_script_class(&self, path: GodotString) -> GodotString {
+    //     GodotString::from("")
+    // }
+
+    // fn get_resource_uid(&self, path: GodotString) -> i64 {
+    //     0
+    // }
+
+    // fn get_dependencies(&self, path: GodotString, add_types: bool) -> PackedStringArray {
+    //     PackedStringArray::new()
+    // }
+    //
+    // fn rename_dependencies(&self, path: GodotString, renames: Dictionary) -> Error {
+    //     Error::OK
+    // }
+
+    // fn exists(&self, path: GodotString) -> bool {
+    //     true
+    // }
+
+    // fn get_classes_used(&self, path: GodotString) -> PackedStringArray {
+    //     PackedStringArray::from(&[GodotString::from("BulletMLFile")])
+    // }
 
     fn load(&self, path: GodotString, _original_path: GodotString, _use_sub_threads: bool, _cache_mode: i32) -> Variant {
         let body = FileAccess::get_file_as_string(path.clone());
@@ -81,41 +102,5 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
                 Variant::from(Error::ERR_INVALID_DATA)
             }
         }
-    }
-}
-
-
-#[derive(GodotClass)]
-#[class(base=ResourceFormatSaver, init)]
-pub struct BulletMLResourceFormatSaver {
-    #[base]
-    base: Base<ResourceFormatSaver>,
-}
-
-#[godot_api]
-impl BulletMLResourceFormatSaver {
-    pub fn new(base: Base<ResourceFormatSaver>) -> Self {
-        Self {
-            base,
-        }
-    }
-}
-
-#[godot_api]
-impl ResourceFormatSaverVirtual for BulletMLResourceFormatSaver {
-    fn get_recognized_extensions(&self, resource: Gd<Resource>) -> PackedStringArray {
-        if self.recognize(resource) {
-            PackedStringArray::from(&[GodotString::from("bml")])
-        } else {
-            PackedStringArray::new()
-        }
-    }
-
-    fn recognize(&self, resource: Gd<Resource>) -> bool {
-        resource.is_class(GodotString::from("BulletML"))
-    }
-
-    fn recognize_path(&self, resource: Gd<Resource>, _path: GodotString) -> bool {
-        self.recognize(resource)
     }
 }
