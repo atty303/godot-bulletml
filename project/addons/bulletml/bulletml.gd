@@ -18,8 +18,6 @@ func _enter_tree():
 	
 	dock = preload("res://addons/bulletml/Preview.tscn").instantiate()
 	add_control_to_dock(DOCK_SLOT_RIGHT_BL, dock)
-	
-	ResourceLoader.add_resource_format_loader(BulletMLResourceFormatLoader.new())
 
 
 func _exit_tree():

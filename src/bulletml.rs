@@ -62,6 +62,10 @@ impl Node2DVirtual for BulletML {
             return;
         }
 
+        if (self.file.is_none()) {
+            return;
+        }
+
         self.add_bullet(false, 0.0, 0.0, None);
     }
 

@@ -39,6 +39,13 @@ pub struct BulletMLResourceFormatLoader {
 
 #[godot_api]
 impl BulletMLResourceFormatLoader {
+    pub fn new(base: Base<ResourceFormatLoader>) -> Self {
+        Self {
+            base,
+            refs_capacity: 1024,
+            expr_capacity: 1024,
+        }
+    }
 }
 
 #[godot_api]
