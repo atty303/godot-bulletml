@@ -1,4 +1,3 @@
-use std::ops::Deref;
 use std::rc::Rc;
 
 use bulletml::parse::BulletMLParser;
@@ -11,6 +10,9 @@ use godot::prelude::*;
 pub struct BulletML {
     #[base]
     base: Base<Resource>,
+
+    #[export]
+    pub bullet_scenes: Array<Gd<PackedScene>>,
 
     pub bml: Rc<bulletml::BulletML>,
 }
@@ -90,11 +92,11 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
     //     PackedStringArray::from(&[GodotString::from("BulletMLFile")])
     // }
 
-    fn load(&self, path: GodotString, original_path: GodotString, use_sub_threads: bool, cache_mode: i32) -> Variant {
+    fn load(&self, path: GodotString, _original_path: GodotString, _use_sub_threads: bool, _cache_mode: i32) -> Variant {
         let body = FileAccess::get_file_as_string(path.clone());
         let parser = BulletMLParser::with_capacities(self.refs_capacity, self.expr_capacity);
         match parser.parse(body.to_string().as_str()) {
-            Ok(bml) => Variant::from(Gd::<BulletML>::with_base(|base| BulletML { base, bml: Rc::new(bml) })),
+            Ok(bml) => Variant::from(Gd::<BulletML>::with_base(|base| BulletML { base, bullet_scenes: array![], bml: Rc::new(bml) })),
             Err(err) => {
                 godot_error!("Failed to parse BulletML file at {}: {:?}", path, err);
                 Variant::from(Error::ERR_INVALID_DATA)

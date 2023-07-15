@@ -25,12 +25,12 @@ struct BulletMLNode {
 #[godot_api]
 impl BulletMLNode {
     fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, state: Option<State>) {
-        if (self.file.is_none()) {
-            return;
-        }
+        // if self.file.is_none() {
+        //     return;
+        // }
 
         let top = self.get_node_as::<BulletMLNode>(".");
-        let mut child = self.bullet_scene.instantiate_as::<Node2D>();
+        let child = self.bullet_scene.instantiate_as::<Node2D>();
 
         let bml = self.file.as_ref().unwrap().bind().bml.clone();
         let mut bullet = Gd::<Bullet>::with_base(|base| {
@@ -60,22 +60,14 @@ impl Node2DVirtual for BulletMLNode {
         }
     }
 
-    fn ready(&mut self) {
-        // if Engine::singleton().is_editor_hint() {
-        //     return;
-        // }
-
-        if (self.file.is_none()) {
+    fn enter_tree(&mut self) {
+        if self.file.is_none() {
             return;
         }
-
-    }
-
-    fn enter_tree(&mut self) {
         self.add_bullet(false, 0.0, 0.0, None);
     }
 
-    fn physics_process(&mut self, delta: f64) {
+    fn physics_process(&mut self, _delta: f64) {
         // if Engine::singleton().is_editor_hint() {
         //     return;
         // }
@@ -122,15 +114,14 @@ impl Bullet {
 #[godot_api]
 impl Node2DVirtual for Bullet {
     fn ready(&mut self) {
-        let mut p = self.presentation.share();
+        let p = self.presentation.share();
         self.add_child(p.upcast());
     }
 
-    fn physics_process(&mut self, delta: f64) {
+    fn physics_process(&mut self, _delta: f64) {
         if !self.is_simple {
             if !self.runner.is_end() {
-                let mut a = self.get_node_as::<Bullet>(".");
-                let mut runner = &mut self.runner;
+                let runner = &mut self.runner;
                 let data = &mut GodotData {
                     root: self.root.share(),
                     bullet: &mut self.bullet_impl,
@@ -173,7 +164,7 @@ impl<'a> AppRunner<GodotData<'a>> for GodotRunner {
         rtod(data.bullet.degree) as f64
     }
 
-    fn get_aim_direction(&self, data: &GodotData) -> f64 {
+    fn get_aim_direction(&self, _data: &GodotData) -> f64 {
         0.0
     }
 
@@ -185,7 +176,7 @@ impl<'a> AppRunner<GodotData<'a>> for GodotRunner {
         1.0
     }
 
-    fn get_rank(&self, data: &GodotData) -> f64 {
+    fn get_rank(&self, _data: &GodotData) -> f64 {
         1.0
     }
 
@@ -201,7 +192,7 @@ impl<'a> AppRunner<GodotData<'a>> for GodotRunner {
         data.root.bind().turn
     }
 
-    fn do_vanish(&mut self, data: &mut GodotData) {
+    fn do_vanish(&mut self, _data: &mut GodotData) {
         //data.bullet.queue_free();
     }
 
@@ -221,7 +212,7 @@ impl<'a> AppRunner<GodotData<'a>> for GodotRunner {
         todo!()
     }
 
-    fn get_rand(&self, data: &mut GodotData) -> f64 {
+    fn get_rand(&self, _data: &mut GodotData) -> f64 {
         randf_range(0.0, 1.0)
     }
 }
