@@ -5,4 +5,4 @@
 [node name="BulletML" type="BulletML" parent="."]
 file = "res://demo/examples/sample.xml"
 bullet_file = "res://demo/Bullet.tscn"
-position = Vector2(569, 158)
+position = Vector2(537, 124)

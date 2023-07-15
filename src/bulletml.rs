@@ -1,13 +1,12 @@
-use std::ops::{Deref, DerefMut};
+use std::ops::Deref;
 use std::rc::Rc;
+
 use bulletml::{AppRunner, Runner, RunnerData, State};
 use bulletml::parse::BulletMLParser;
-use godot::prelude::*;
 use godot::engine::{Engine, FileAccess};
-use godot::engine::node::InternalMode;
-use godot::engine::packed_scene::GenEditState;
 use godot::engine::utilities::randf_range;
-use godot::prelude::utilities::randf;
+use godot::prelude::*;
+use crate::resource::BulletMLFile;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -15,14 +14,12 @@ struct BulletML {
     #[base]
     base: Base<Node2D>,
 
-    #[export(global_file = "*.xml")]
-    file: GodotString,
+    #[export]
+    file: Option<Gd<BulletMLFile>>,
 
-    #[export(global_file = "*.tscn")]
-    bullet_file: GodotString,
+    #[export]
+    bullet_scene: Gd<PackedScene>,
 
-    bml: Option<Rc<bulletml::BulletML>>,
-    bullet_scene: Option<Gd<PackedScene>>,
     turn: u32,
 }
 
@@ -30,17 +27,18 @@ struct BulletML {
 impl BulletML {
     fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, state: Option<State>) {
         let top = self.get_node_as::<BulletML>(".");
-        let mut child = self.bullet_scene.as_ref().unwrap().instantiate_as::<Node2D>();
+        let mut child = self.bullet_scene.instantiate_as::<Node2D>();
 
+        let bml = self.file.as_ref().unwrap().bind().bml.clone();
         let mut bullet = Gd::<Bullet>::with_base(|base| {
-            Bullet::new(base, top, child, self.bml.clone().unwrap().clone(), is_simple)
+            Bullet::new(base, top, child, bml.clone(), is_simple)
         });
         {
             let mut b = bullet.bind_mut();
             if let Some(s) = state {
                 b.runner.init_from_state(s);
             } else {
-                b.runner.init(self.bml.clone().unwrap().deref());
+                b.runner.init(bml.clone().deref());
             }
             b.set(direction, speed);
         }
@@ -53,10 +51,8 @@ impl Node2DVirtual for BulletML {
     fn init(base: Base<Node2D>) -> Self {
         Self {
             base,
-            file: GodotString::default(),
-            bml: None,
-            bullet_file: GodotString::default(),
-            bullet_scene: None,
+            file: None,
+            bullet_scene: PackedScene::new(),
             turn: 0,
         }
     }
@@ -65,12 +61,6 @@ impl Node2DVirtual for BulletML {
         if Engine::singleton().is_editor_hint() {
             return;
         }
-
-        let body = FileAccess::get_file_as_string(self.file.clone());
-        let bml = Rc::new(BulletMLParser::with_capacities(1024, 1024).parse(body.to_string().as_str()).unwrap());
-        self.bml = Some(bml);
-
-        self.bullet_scene = Some(load(self.bullet_file.clone()));
 
         self.add_bullet(false, 0.0, 0.0, None);
     }
@@ -241,3 +231,5 @@ fn rtod(a: f32) -> f32 {
 fn dtor(a: f32) -> f32 {
     a * std::f32::consts::PI / 180.
 }
+
+
