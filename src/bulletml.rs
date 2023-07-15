@@ -2,10 +2,9 @@ use std::ops::Deref;
 use std::rc::Rc;
 
 use bulletml::{AppRunner, Runner, RunnerData, State};
-use bulletml::parse::BulletMLParser;
-use godot::engine::{Engine, FileAccess};
 use godot::engine::utilities::randf_range;
 use godot::prelude::*;
+
 use crate::resource::BulletMLFile;
 
 #[derive(GodotClass)]
@@ -58,21 +57,24 @@ impl Node2DVirtual for BulletML {
     }
 
     fn ready(&mut self) {
-        if Engine::singleton().is_editor_hint() {
-            return;
-        }
+        // if Engine::singleton().is_editor_hint() {
+        //     return;
+        // }
 
         if (self.file.is_none()) {
             return;
         }
 
+    }
+
+    fn enter_tree(&mut self) {
         self.add_bullet(false, 0.0, 0.0, None);
     }
 
     fn physics_process(&mut self, delta: f64) {
-        if Engine::singleton().is_editor_hint() {
-            return;
-        }
+        // if Engine::singleton().is_editor_hint() {
+        //     return;
+        // }
 
         self.turn += 1;
     }
@@ -116,19 +118,11 @@ impl Bullet {
 #[godot_api]
 impl Node2DVirtual for Bullet {
     fn ready(&mut self) {
-        if Engine::singleton().is_editor_hint() {
-            return;
-        }
-
         let mut p = self.presentation.share();
         self.add_child(p.upcast());
     }
 
     fn physics_process(&mut self, delta: f64) {
-        if Engine::singleton().is_editor_hint() {
-            return;
-        }
-
         if !self.is_simple {
             if !self.runner.is_end() {
                 let mut a = self.get_node_as::<Bullet>(".");

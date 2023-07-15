@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://d0fqvrs0nlhk2"]
+
+[ext_resource type="PackedScene" uid="uid://d00eylfkiw4me" path="res://demo/Bullet.tscn" id="2_jppvc"]
+
+[node name="AspectRatioContainer" type="AspectRatioContainer"]
+custom_minimum_size = Vector2(100, 100)
+offset_right = 33.0
+offset_bottom = 26.0
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 2
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+disable_3d = true
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="BulletML" type="BulletML" parent="SubViewportContainer/SubViewport"]
+bullet_scene = ExtResource("2_jppvc")
