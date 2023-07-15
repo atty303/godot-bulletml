@@ -1,10 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://cgqo2wpjcdhm1"]
 
-[ext_resource type="BulletMLFile" path="res://demo/examples/sample.xml" id="1_spr36"]
+[ext_resource type="BulletML" path="res://demo/examples/sample.xml" id="1_1uwf0"]
 [ext_resource type="PackedScene" uid="uid://d00eylfkiw4me" path="res://demo/Bullet.tscn" id="2_tutaj"]
 
 [node name="Demo" type="Node2D"]
 
-[node name="BulletML" type="BulletML" parent="."]
-file = ExtResource("1_spr36")
+[node name="BulletMLNode" type="BulletMLNode" parent="."]
+file = ExtResource("1_1uwf0")
 bullet_scene = ExtResource("2_tutaj")
+position = Vector2(618, 219)

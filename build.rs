@@ -17,7 +17,10 @@ fn main() {
     let target_dir = get_output_path();
     let src_path = target_dir.join("godot_bulletml.dll");
     let dest_path = Path::new("project").join("addons").join("bulletml").join("bin").join(format!("libbulletml.{target_os}.{profile}.{target_arch}.dll"));
-    //if src_path.exists() {
-        fs::copy(src_path, dest_path).unwrap();
-    //}
+    if dest_path.exists() {
+        fs::remove_file(&dest_path);
+    }
+    if src_path.exists() {
+        fs::copy(&src_path, &dest_path).unwrap();
+    }
 }

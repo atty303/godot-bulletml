@@ -5,16 +5,16 @@ use bulletml::{AppRunner, Runner, RunnerData, State};
 use godot::engine::utilities::randf_range;
 use godot::prelude::*;
 
-use crate::resource::BulletMLFile;
+use crate::resource::BulletML;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
-struct BulletML {
+struct BulletMLNode {
     #[base]
     base: Base<Node2D>,
 
     #[export]
-    file: Option<Gd<BulletMLFile>>,
+    file: Option<Gd<BulletML>>,
 
     #[export]
     bullet_scene: Gd<PackedScene>,
@@ -23,9 +23,13 @@ struct BulletML {
 }
 
 #[godot_api]
-impl BulletML {
+impl BulletMLNode {
     fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, state: Option<State>) {
-        let top = self.get_node_as::<BulletML>(".");
+        if (self.file.is_none()) {
+            return;
+        }
+
+        let top = self.get_node_as::<BulletMLNode>(".");
         let mut child = self.bullet_scene.instantiate_as::<Node2D>();
 
         let bml = self.file.as_ref().unwrap().bind().bml.clone();
@@ -46,7 +50,7 @@ impl BulletML {
 }
 
 #[godot_api]
-impl Node2DVirtual for BulletML {
+impl Node2DVirtual for BulletMLNode {
     fn init(base: Base<Node2D>) -> Self {
         Self {
             base,
@@ -86,7 +90,7 @@ struct Bullet {
     #[base]
     base: Base<Node2D>,
 
-    root: Gd<BulletML>,
+    root: Gd<BulletMLNode>,
     presentation: Gd<Node2D>,
     bml: Rc<bulletml::BulletML>,
     runner: Runner<GodotRunner>,
@@ -97,7 +101,7 @@ struct Bullet {
 
 #[godot_api]
 impl Bullet {
-    fn new(base: Base<Node2D>, root: Gd<BulletML>, presentation: Gd<Node2D>, bml: Rc<bulletml::BulletML>, is_simple: bool) -> Self {
+    fn new(base: Base<Node2D>, root: Gd<BulletMLNode>, presentation: Gd<Node2D>, bml: Rc<bulletml::BulletML>, is_simple: bool) -> Self {
         Self {
             base,
             root,
@@ -152,7 +156,7 @@ struct BulletImpl {
 }
 
 struct GodotData<'a> {
-    root: Gd<BulletML>,
+    root: Gd<BulletMLNode>,
     bullet: &'a mut BulletImpl,
 }
 

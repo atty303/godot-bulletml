@@ -15,5 +15,5 @@ disable_3d = true
 handle_input_locally = false
 render_target_update_mode = 4
 
-[node name="BulletML" type="BulletML" parent="SubViewportContainer/SubViewport"]
+[node name="BulletMLNode" type="BulletMLNode" parent="SubViewportContainer/SubViewport"]
 bullet_scene = ExtResource("2_jppvc")

@@ -8,7 +8,7 @@ use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=Resource)]
-pub struct BulletMLFile {
+pub struct BulletML {
     #[base]
     base: Base<Resource>,
 
@@ -16,11 +16,11 @@ pub struct BulletMLFile {
 }
 
 #[godot_api]
-impl BulletMLFile {
+impl BulletML {
 }
 
 #[godot_api]
-impl ResourceVirtual for BulletMLFile {
+impl ResourceVirtual for BulletML {
 }
 
 
@@ -59,11 +59,11 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
     // }
 
     fn handles_type(&self, type_: StringName) -> bool {
-        type_ == StringName::from("BulletMLFile")
+        type_ == StringName::from("BulletML")
     }
 
     fn get_resource_type(&self, _path: GodotString) -> GodotString {
-        GodotString::from("BulletMLFile")
+        GodotString::from("BulletML")
     }
 
     // fn get_resource_script_class(&self, path: GodotString) -> GodotString {
@@ -94,7 +94,7 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
         let body = FileAccess::get_file_as_string(path.clone());
         let parser = BulletMLParser::with_capacities(self.refs_capacity, self.expr_capacity);
         match parser.parse(body.to_string().as_str()) {
-            Ok(bml) => Variant::from(Gd::<BulletMLFile>::with_base(|base| BulletMLFile { base, bml: Rc::new(bml) })),
+            Ok(bml) => Variant::from(Gd::<BulletML>::with_base(|base| BulletML { base, bml: Rc::new(bml) })),
             Err(err) => {
                 godot_error!("Failed to parse BulletML file at {}: {:?}", path, err);
                 Variant::from(Error::ERR_INVALID_DATA)
