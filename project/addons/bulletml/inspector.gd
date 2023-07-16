@@ -3,7 +3,7 @@ extends EditorInspectorPlugin
 
 
 func _can_handle(object):
-	return object.is_class("BulletML")
+	return object.is_class("BulletMLPlayer")
 
 
 func _parse_begin(object):
@@ -17,6 +17,6 @@ func _parse_begin(object):
 	viewport.set_size(Vector2i(w, h))
 	
 	var bulletml := preview.get_node("SubViewportContainer/SubViewport/BulletMLPlayer") as BulletMLPlayer
-	bulletml.set_file(object)
+	bulletml.set_file(object.file)
 	
 	add_custom_control(preview)
