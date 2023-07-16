@@ -11,9 +11,6 @@ pub struct BulletML {
     #[base]
     base: Base<Resource>,
 
-    #[export]
-    pub bullet_scenes: Array<Gd<PackedScene>>,
-
     pub bml: Rc<bulletml::BulletML>,
 }
 
@@ -21,31 +18,24 @@ pub struct BulletML {
 impl BulletML {
 }
 
-#[godot_api]
-impl ResourceVirtual for BulletML {
-}
-
 
 #[derive(GodotClass)]
-#[class(base=ResourceFormatLoader, init)]
+#[class(base=ResourceFormatLoader)]
 pub struct BulletMLResourceFormatLoader {
     #[base]
     base: Base<ResourceFormatLoader>,
 
-    #[init(default = 1024)]
     refs_capacity: usize,
-
-    #[init(default = 1024)]
     expr_capacity: usize,
 }
 
 #[godot_api]
 impl BulletMLResourceFormatLoader {
-    pub fn new(base: Base<ResourceFormatLoader>) -> Self {
+    pub fn new(base: Base<ResourceFormatLoader>, refs_capacity: usize, expr_capacity: usize) -> Self {
         Self {
             base,
-            refs_capacity: 1024,
-            expr_capacity: 1024,
+            refs_capacity,
+            expr_capacity,
         }
     }
 }
@@ -96,7 +86,7 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
         let body = FileAccess::get_file_as_string(path.clone());
         let parser = BulletMLParser::with_capacities(self.refs_capacity, self.expr_capacity);
         match parser.parse(body.to_string().as_str()) {
-            Ok(bml) => Variant::from(Gd::<BulletML>::with_base(|base| BulletML { base, bullet_scenes: array![], bml: Rc::new(bml) })),
+            Ok(bml) => Variant::from(Gd::<BulletML>::with_base(|base| BulletML { base, bml: Rc::new(bml) })),
             Err(err) => {
                 godot_error!("Failed to parse BulletML file at {}: {:?}", path, err);
                 Variant::from(Error::ERR_INVALID_DATA)

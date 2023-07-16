@@ -23,7 +23,7 @@ impl ExtensionLayer for BulletMLExtension {
     fn initialize(&mut self) {
         godot_print!("init");
         auto_register_classes();
-        let loader = Gd::<BulletMLResourceFormatLoader>::with_base(|base| BulletMLResourceFormatLoader::new(base));
+        let loader = Gd::<BulletMLResourceFormatLoader>::with_base(|base| BulletMLResourceFormatLoader::new(base, 16, 1024));
         self.loader = Some(loader.share());
         ResourceLoader::singleton().add_resource_format_loader(loader.upcast());
         godot_print!("init done");
