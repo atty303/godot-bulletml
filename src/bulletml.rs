@@ -1,4 +1,4 @@
-use std::ops::Deref;
+use std::ops::{Deref, DerefMut};
 use std::rc::Rc;
 
 use bulletml::{AppRunner, Runner, RunnerData, State};
@@ -8,13 +8,16 @@ use godot::prelude::*;
 use crate::resource::BulletML;
 
 #[derive(GodotClass)]
-#[class(base=Node2D)]
+#[class(base=Node)]
 struct BulletMLPlayer {
     #[base]
-    base: Base<Node2D>,
+    base: Base<Node>,
 
     #[export]
-    file: Option<Gd<BulletML>>,
+    bullet_root: Option<Gd<Node2D>>,
+
+    #[export]
+    bulletml: Option<Gd<BulletML>>,
 
     #[export]
     bullet_scene: Gd<PackedScene>,
@@ -25,16 +28,16 @@ struct BulletMLPlayer {
 #[godot_api]
 impl BulletMLPlayer {
     fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, state: Option<State>) {
-        // if self.file.is_none() {
-        //     return;
-        // }
+        if self.bullet_root.is_none() {
+            return;
+        }
 
-        let top = self.get_node_as::<BulletMLPlayer>(".");
+        let player = self.get_node_as::<BulletMLPlayer>(".");
         let child = self.bullet_scene.instantiate_as::<Node2D>();
 
-        let bml = self.file.as_ref().unwrap().bind().bml.clone();
+        let bml = self.bulletml.as_ref().unwrap().bind().bml.clone();
         let mut bullet = Gd::<Bullet>::with_base(|base| {
-            Bullet::new(base, top, child, bml.clone(), is_simple)
+            Bullet::new(base, player, child, bml.clone(), is_simple)
         });
         {
             let mut b = bullet.bind_mut();
@@ -45,23 +48,27 @@ impl BulletMLPlayer {
             }
             b.set(direction, speed);
         }
-        self.base.add_child(bullet.upcast());
+
+        let a = self.bullet_root.as_mut().unwrap();
+        a.deref_mut().add_child(bullet.upcast());
+
     }
 }
 
 #[godot_api]
-impl Node2DVirtual for BulletMLPlayer {
-    fn init(base: Base<Node2D>) -> Self {
+impl NodeVirtual for BulletMLPlayer {
+    fn init(base: Base<Node>) -> Self {
         Self {
             base,
-            file: None,
+            bullet_root: None,
+            bulletml: None,
             bullet_scene: PackedScene::new(),
             turn: 0,
         }
     }
 
     fn enter_tree(&mut self) {
-        if self.file.is_none() {
+        if self.bulletml.is_none() {
             return;
         }
         self.add_bullet(false, 0.0, 0.0, None);
@@ -82,7 +89,7 @@ struct Bullet {
     #[base]
     base: Base<Node2D>,
 
-    root: Gd<BulletMLPlayer>,
+    player: Gd<BulletMLPlayer>,
     presentation: Gd<Node2D>,
     bml: Rc<bulletml::BulletML>,
     runner: Runner<GodotRunner>,
@@ -93,10 +100,10 @@ struct Bullet {
 
 #[godot_api]
 impl Bullet {
-    fn new(base: Base<Node2D>, root: Gd<BulletMLPlayer>, presentation: Gd<Node2D>, bml: Rc<bulletml::BulletML>, is_simple: bool) -> Self {
+    fn new(base: Base<Node2D>, player: Gd<BulletMLPlayer>, presentation: Gd<Node2D>, bml: Rc<bulletml::BulletML>, is_simple: bool) -> Self {
         Self {
             base,
-            root,
+            player,
             presentation,
             bml: bml.clone(),
             runner: Runner::new(GodotRunner::new(), bml.clone().deref()),
@@ -123,7 +130,7 @@ impl Node2DVirtual for Bullet {
             if !self.runner.is_end() {
                 let runner = &mut self.runner;
                 let data = &mut GodotData {
-                    root: self.root.share(),
+                    player: self.player.share(),
                     bullet: &mut self.bullet_impl,
                 };
                 let r = &mut RunnerData {
@@ -147,7 +154,7 @@ struct BulletImpl {
 }
 
 struct GodotData<'a> {
-    root: Gd<BulletMLPlayer>,
+    player: Gd<BulletMLPlayer>,
     bullet: &'a mut BulletImpl,
 }
 
@@ -181,15 +188,15 @@ impl<'a> AppRunner<GodotData<'a>> for GodotRunner {
     }
 
     fn create_simple_bullet(&mut self, data: &mut GodotData, direction: f64, speed: f64) {
-        data.root.bind_mut().add_bullet(true, dtor(direction as f32), speed as f32, None);
+        data.player.bind_mut().add_bullet(true, dtor(direction as f32), speed as f32, None);
     }
 
     fn create_bullet(&mut self, data: &mut GodotData, state: State, direction: f64, speed: f64) {
-        data.root.bind_mut().add_bullet(false, dtor(direction as f32), speed as f32, Some(state));
+        data.player.bind_mut().add_bullet(false, dtor(direction as f32), speed as f32, Some(state));
     }
 
     fn get_turn(&self, data: &GodotData) -> u32 {
-        data.root.bind().turn
+        data.player.bind().turn
     }
 
     fn do_vanish(&mut self, _data: &mut GodotData) {

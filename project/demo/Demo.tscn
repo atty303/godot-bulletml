@@ -5,7 +5,10 @@
 
 [node name="Demo" type="Node2D"]
 
-[node name="BulletMLPlayer" type="BulletMLPlayer" parent="."]
-file = ExtResource("1_1uwf0")
+[node name="BulletMLPlayer" type="BulletMLPlayer" parent="." node_paths=PackedStringArray("bullet_root")]
+bullet_root = NodePath("../Node2D")
+bulletml = ExtResource("1_1uwf0")
 bullet_scene = ExtResource("2_tutaj")
-position = Vector2(618, 219)
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2(648, 319)
