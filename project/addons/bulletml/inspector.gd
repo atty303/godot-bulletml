@@ -37,6 +37,7 @@ func _parse_category(object, category):
 #	inspector.connect("resource_selected", resource_selected)
 #	inspector.connect("edited_object_changed", edited_object_changed)
 #	inspector.connect("property_edited", property_edited)
+	object.connect("changed", changed)
 	
 	add_custom_control(preview)
 
@@ -50,4 +51,7 @@ func edited_object_changed():
 func property_edited(path: String):
 	if path == "bulletml":
 		pass
+	
+func changed():
+	print("changed")
 	

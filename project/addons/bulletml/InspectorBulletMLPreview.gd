@@ -13,6 +13,8 @@ func _enter_tree():
 	print("enter_tree")
 	inspector.connect("property_edited", property_edited)
 	inspector.connect("restart_requested", restart_requested)
+	inspector.connect("resource_selected", resource_selected)
+	inspector.connect("edited_object_changed", edited_object_changed)
 
 func _exit_tree():
 	# inspector.disconnect("property_edited", property_edited)
@@ -28,3 +30,9 @@ func property_edited(path: String):
 
 func restart_requested():
 	print("restart_requested")
+
+func resource_selected(r, p):
+	print("resource_selected")
+
+func edited_object_changed():
+	print("edited_object_changed")

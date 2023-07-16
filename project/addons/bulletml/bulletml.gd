@@ -16,6 +16,8 @@ func _enter_tree():
 	get_editor_interface().get_editor_main_screen().add_child(editor_panel)
 	_make_visible(false)
 	
+	connect("resource_saved", resource_saved)
+	
 	# var c = editor_panel.get_node("HBoxContainer")
 	# c.add_child(get_editor_interface().get_script_editor())
 	
@@ -43,3 +45,7 @@ func _get_plugin_name():
 
 func _get_plugin_icon():
 	return get_editor_interface().get_base_control().get_theme_icon("Node", "EditorIcons")
+
+
+func resource_saved(r):
+	print("resource_saved")

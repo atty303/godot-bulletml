@@ -16,8 +16,15 @@ pub struct BulletML {
 
 #[godot_api]
 impl BulletML {
+    fn loaded(&mut self) {
+        self.notify_property_list_changed();
+        self.emit_changed();
+    }
 }
 
+#[godot_api]
+impl ResourceVirtual for BulletML {
+}
 
 #[derive(GodotClass)]
 #[class(base=ResourceFormatLoader)]
@@ -83,10 +90,16 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
     // }
 
     fn load(&self, path: GodotString, _original_path: GodotString, _use_sub_threads: bool, _cache_mode: i32) -> Variant {
+        godot_print!("Loading BulletML file at {}", path);
         let body = FileAccess::get_file_as_string(path.clone());
         let parser = BulletMLParser::with_capacities(self.refs_capacity, self.expr_capacity);
         match parser.parse(body.to_string().as_str()) {
-            Ok(bml) => Variant::from(Gd::<BulletML>::with_base(|base| BulletML { base, bml: Rc::new(bml) })),
+            Ok(bml) => {
+                let mut bulletml = Gd::<BulletML>::with_base(|base| BulletML { base, bml: Rc::new(bml) });
+                bulletml.bind_mut().loaded();
+
+                Variant::from(bulletml)
+            }
             Err(err) => {
                 godot_error!("Failed to parse BulletML file at {}: {:?}", path, err);
                 Variant::from(Error::ERR_INVALID_DATA)
@@ -94,3 +107,4 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
         }
     }
 }
+
