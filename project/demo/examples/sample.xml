@@ -11,7 +11,7 @@
                     <speed>(0.3+$rand*0.5)*($rank+1)</speed>
                     <bullet/>
                 </fire>
-                <wait>1</wait>
+                <wait>10</wait>
             </action>
         </repeat>
         <wait>100</wait>

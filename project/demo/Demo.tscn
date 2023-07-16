@@ -1,14 +1,15 @@
 [gd_scene load_steps=3 format=3 uid="uid://cgqo2wpjcdhm1"]
 
-[ext_resource type="BulletML" path="res://demo/examples/sample.xml" id="1_1uwf0"]
+[ext_resource type="BulletML" path="res://demo/examples/sample.xml" id="1_v67ix"]
 [ext_resource type="PackedScene" uid="uid://d00eylfkiw4me" path="res://demo/Bullet.tscn" id="2_tutaj"]
 
 [node name="Demo" type="Node2D"]
+position = Vector2(94, 97)
 
 [node name="BulletMLPlayer" type="BulletMLPlayer" parent="." node_paths=PackedStringArray("bullet_root")]
-bullet_root = NodePath("../Node2D")
-bulletml = ExtResource("1_1uwf0")
+bullet_root = NodePath("../BulletRoot")
+bulletml = ExtResource("1_v67ix")
 bullet_scene = ExtResource("2_tutaj")
 
-[node name="Node2D" type="Node2D" parent="."]
+[node name="BulletRoot" type="Node2D" parent="."]
 position = Vector2(648, 319)

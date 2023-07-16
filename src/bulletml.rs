@@ -22,6 +22,7 @@ struct BulletMLPlayer {
     #[export]
     bullet_scene: Gd<PackedScene>,
 
+    is_playing: bool,
     turn: u32,
 }
 
@@ -51,6 +52,29 @@ impl BulletMLPlayer {
 
         let a = self.bullet_root.as_mut().unwrap();
         a.deref_mut().add_child(bullet.upcast());
+    }
+
+    #[func]
+    fn play(&mut self) {
+        if self.bulletml.is_none() {
+            return;
+        }
+        self.is_playing = true;
+        self.add_bullet(false, 0.0, 0.0, None);
+    }
+
+    #[func]
+    fn stop(&mut self) {
+        self.is_playing = false;
+    }
+
+    #[func]
+    fn clear(&mut self) {
+        let a = self.bullet_root.as_mut().unwrap();
+
+        if let Some(child) = a.deref_mut().get_child(0) {
+            a.deref_mut().remove_child(child);
+        }
 
     }
 }
@@ -63,23 +87,15 @@ impl NodeVirtual for BulletMLPlayer {
             bullet_root: None,
             bulletml: None,
             bullet_scene: PackedScene::new(),
+            is_playing: false,
             turn: 0,
         }
     }
 
-    fn enter_tree(&mut self) {
-        if self.bulletml.is_none() {
-            return;
-        }
-        self.add_bullet(false, 0.0, 0.0, None);
-    }
-
     fn physics_process(&mut self, _delta: f64) {
-        // if Engine::singleton().is_editor_hint() {
-        //     return;
-        // }
-
-        self.turn += 1;
+        if self.is_playing {
+            self.turn += 1;
+        }
     }
 }
 
@@ -126,6 +142,10 @@ impl Node2DVirtual for Bullet {
     }
 
     fn physics_process(&mut self, _delta: f64) {
+        if !self.player.bind().is_playing {
+            return;
+        }
+
         if !self.is_simple {
             if !self.runner.is_end() {
                 let runner = &mut self.runner;

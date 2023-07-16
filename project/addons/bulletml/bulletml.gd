@@ -10,6 +10,7 @@ func _enter_tree():
 	# Initialization of the plugin goes here.
 	inspector_plugin = preload("res://addons/bulletml/inspector.gd").new()
 	add_inspector_plugin(inspector_plugin)
+	inspector_plugin.inspector = get_editor_interface().get_inspector()
 	
 	editor_panel = EditorPanel.instantiate()
 	get_editor_interface().get_editor_main_screen().add_child(editor_panel)
