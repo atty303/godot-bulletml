@@ -1,7 +1,15 @@
-[gd_scene load_steps=2 format=3 uid="uid://d00eylfkiw4me"]
+[gd_scene load_steps=3 format=3 uid="uid://d00eylfkiw4me"]
 
+[ext_resource type="Script" path="res://demo/Bullet.gd" id="1_ehnwh"]
 [ext_resource type="Texture2D" uid="uid://deaglk6yxhhfk" path="res://icon.svg" id="1_gnfjs"]
 
-[node name="Bullet" type="Sprite2D"]
+[node name="Bullet" type="Area2D"]
 scale = Vector2(0.05, 0.05)
+script = ExtResource("1_ehnwh")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("1_gnfjs")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
