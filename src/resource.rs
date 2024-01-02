@@ -50,7 +50,7 @@ impl BulletMLResourceFormatLoader {
 #[godot_api]
 impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
     fn get_recognized_extensions(&self) -> PackedStringArray {
-        PackedStringArray::from(&[GodotString::from("xml")])
+        PackedStringArray::from(&[GodotString::from("xml"), GodotString::from("bulletml")])
     }
 
     // fn recognize_path(&self, path: GodotString, type_: StringName) -> bool {

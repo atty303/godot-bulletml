@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cqgh4qia5qmge"]
+[gd_scene load_steps=3 format=3 uid="uid://cqgh4qia5qmge"]
 
 [ext_resource type="Script" path="res://addons/bulletml/Editor.gd" id="1_56k0y"]
+[ext_resource type="Script" path="res://addons/bulletml/BulletMLCodeEdit.gd" id="2_rnsyp"]
 
 [node name="CenterContainer" type="VBoxContainer"]
 anchors_preset = 15
@@ -19,3 +20,14 @@ prefer_global_menu = false
 [node name="HBoxContainer" type="HBoxContainer" parent="."]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="CodeEdit" type="CodeEdit" parent="HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+minimap_draw = true
+indent_size = 2
+indent_use_spaces = true
+indent_automatic = true
+auto_brace_completion_enabled = true
+auto_brace_completion_highlight_matching = true
+script = ExtResource("2_rnsyp")

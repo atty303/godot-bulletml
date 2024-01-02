@@ -1,0 +1,7 @@
+nodes:
+	- aaa
+	- bbb
+	- ccc:
+		ddd:
+			a: |
+			hoge
