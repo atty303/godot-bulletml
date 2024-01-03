@@ -34,19 +34,12 @@ impl BulletMLPlayer {
         }
 
         let player = self.get_node_as::<BulletMLPlayer>(".");
-        let child = self.bullet_scene.instantiate_as::<Node2D>();
-
         let bml = self.bulletml.as_ref().unwrap().bind().bml.clone();
-        let mut bullet = Gd::<Bullet>::with_base(|base| {
-            Bullet::new(base, player, child, bml.clone(), is_simple)
-        });
+
+        let mut bullet = self.bullet_scene.instantiate_as::<Bullet>();
         {
             let mut b = bullet.bind_mut();
-            if let Some(s) = state {
-                b.runner.init_from_state(s);
-            } else {
-                b.runner.init(bml.clone().deref());
-            }
+            b.init0(player, bml.clone(), is_simple, state);
             b.set(direction, speed);
         }
 
@@ -105,10 +98,9 @@ struct Bullet {
     #[base]
     base: Base<Node2D>,
 
-    player: Gd<BulletMLPlayer>,
-    presentation: Gd<Node2D>,
-    bml: Rc<bulletml::BulletML>,
-    runner: Runner<GodotRunner>,
+    player: Option<Gd<BulletMLPlayer>>,
+    bml: Option<Rc<bulletml::BulletML>>,
+    runner: Option<Runner<GodotRunner>>,
     is_simple: bool,
 
     bullet_impl: BulletImpl,
@@ -116,15 +108,18 @@ struct Bullet {
 
 #[godot_api]
 impl Bullet {
-    fn new(base: Base<Node2D>, player: Gd<BulletMLPlayer>, presentation: Gd<Node2D>, bml: Rc<bulletml::BulletML>, is_simple: bool) -> Self {
-        Self {
-            base,
-            player,
-            presentation,
-            bml: bml.clone(),
-            runner: Runner::new(GodotRunner::new(), bml.clone().deref()),
-            is_simple,
-            bullet_impl: BulletImpl { degree: 0.0, speed: 0.0 },
+    fn init0(&mut self, player: Gd<BulletMLPlayer>, bml: Rc<bulletml::BulletML>, is_simple: bool, state: Option<State>) {
+        self.player = Some(player);
+        self.bml = Some(bml.clone());
+        self.runner = Some(Runner::new(GodotRunner::new(), bml.clone().deref()));
+        self.is_simple = is_simple;
+
+        if let Some(runner) = self.runner.as_mut() {
+            if let Some(s) = state {
+                runner.init_from_state(s);
+            } else {
+                runner.init(bml.clone().deref());
+            }
         }
     }
 
@@ -136,35 +131,50 @@ impl Bullet {
 
 #[godot_api]
 impl Node2DVirtual for Bullet {
-    fn ready(&mut self) {
-        let p = self.presentation.share();
-        self.add_child(p.upcast());
+    fn init(base: Base<Self::Base>) -> Self {
+        godot_print!("bullet init");
+        Self {
+            base,
+            player: None,
+            bml: None,
+            runner: None,
+            is_simple: true,
+            bullet_impl: BulletImpl { degree: 0.0, speed: 0.0 },
+        }
     }
 
     fn physics_process(&mut self, _delta: f64) {
-        if !self.player.bind().is_playing {
-            return;
-        }
+        println!("bullet physics_process");
+        match (&self.player, &self.bml, &mut self.runner) {
+            (Some(player), Some(bml), Some(runner)) => {
+                godot_print!("bullet is initialized");
+                if !player.bind().is_playing {
+                    return;
+                }
 
-        if !self.is_simple {
-            if !self.runner.is_end() {
-                let runner = &mut self.runner;
-                let data = &mut GodotData {
-                    player: self.player.share(),
-                    bullet: &mut self.bullet_impl,
-                };
-                let r = &mut RunnerData {
-                    bml: self.bml.deref(),
-                    data,
-                };
-                runner.run(r);
+                if !self.is_simple {
+                    if !runner.is_end() {
+                        let data = &mut GodotData {
+                            player: player.share(),
+                            bullet: &mut self.bullet_impl,
+                        };
+                        let r = &mut RunnerData {
+                            bml: bml.deref(),
+                            data,
+                        };
+                        runner.run(r);
+                    }
+                }
+
+                let mx = f32::sin(self.bullet_impl.degree) * self.bullet_impl.speed;
+                let my = f32::cos(self.bullet_impl.degree) * self.bullet_impl.speed;
+                let pos = self.get_position();
+                self.set_position(pos + Vector2::new(mx, my));
+            }
+            _ => {
+                godot_print!("bullet is not initialized");
             }
         }
-
-        let mx = f32::sin(self.bullet_impl.degree) * self.bullet_impl.speed;
-        let my = f32::cos(self.bullet_impl.degree) * self.bullet_impl.speed;
-        let pos = self.get_position();
-        self.set_position(pos + Vector2::new(mx, my));
     }
 }
 
