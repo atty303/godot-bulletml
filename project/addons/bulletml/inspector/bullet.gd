@@ -19,13 +19,16 @@ func _ready():
 func _on_visibility_enter():
 	pass
 
+
 func _on_visibility_exit():
 	queue_free()
 
 
 func _physics_process(delta):
-	var pos = get_parent().position
-	line.clear_points()
-	line.add_point(prev_position - pos)
-	line.add_point(Vector2(0, 0))
-	prev_position = pos
+	if get_parent() is Bullet:
+		var pos = get_parent().position
+		#var pos = position
+		line.clear_points()
+		line.add_point(prev_position - pos)
+		line.add_point(Vector2(0, 0))
+		prev_position = pos

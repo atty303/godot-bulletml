@@ -56,15 +56,15 @@ func _get_plugin_icon():
 	return get_editor_interface().get_base_control().get_theme_icon("Node", "EditorIcons")
 
 
-func _edit(object):
-	if object is BulletML and code_edit:
-		print("_edit")
-		var file = FileAccess.open(object.resource_path, FileAccess.READ)
-		code_edit.text = file.get_as_text(true)
+#func _edit(object):
+#	if object is BulletML and code_edit:
+#		print("_edit")
+#		var file = FileAccess.open(object.resource_path, FileAccess.READ)
+#		code_edit.text = file.get_as_text(true)
 
 
-func _handles(object):
-	return object is BulletML
+#func _handles(object):
+#	return object is BulletML
 
 
 func resource_saved(r):
