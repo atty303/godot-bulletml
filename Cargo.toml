@@ -7,5 +7,5 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-godot = { git = "https://github.com/godot-rust/gdext", rev = "5d6725f45cbf7edfaf313385b0d05c1375e85eb5" }
+godot = { git = "https://github.com/godot-rust/gdext", rev = "5e18af87a13bf8d40b4f50bfcb180228e227b773" }
 bulletml = "0.2.1"

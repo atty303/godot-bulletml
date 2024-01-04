@@ -1,7 +1,7 @@
 use std::rc::Rc;
 
 use bulletml::parse::BulletMLParser;
-use godot::engine::{FileAccess, ResourceFormatLoader, ResourceFormatLoaderVirtual};
+use godot::engine::{FileAccess, IResourceFormatLoader, ResourceFormatLoader};
 use godot::engine::global::Error;
 use godot::prelude::*;
 
@@ -17,13 +17,13 @@ pub struct BulletML {
 #[godot_api]
 impl BulletML {
     fn loaded(&mut self) {
-        self.notify_property_list_changed();
-        self.emit_changed();
+        self.base.notify_property_list_changed();
+        self.base.emit_changed();
     }
 }
 
 #[godot_api]
-impl ResourceVirtual for BulletML {
+impl IResource for BulletML {
 }
 
 #[derive(GodotClass)]
@@ -48,9 +48,9 @@ impl BulletMLResourceFormatLoader {
 }
 
 #[godot_api]
-impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
+impl IResourceFormatLoader for BulletMLResourceFormatLoader {
     fn get_recognized_extensions(&self) -> PackedStringArray {
-        PackedStringArray::from(&[GodotString::from("xml"), GodotString::from("bulletml")])
+        PackedStringArray::from(&[GString::from("xml"), GString::from("bulletml")])
     }
 
     // fn recognize_path(&self, path: GodotString, type_: StringName) -> bool {
@@ -61,8 +61,8 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
         type_ == StringName::from("BulletML")
     }
 
-    fn get_resource_type(&self, _path: GodotString) -> GodotString {
-        GodotString::from("BulletML")
+    fn get_resource_type(&self, _path: GString) -> GString {
+        GString::from("BulletML")
     }
 
     // fn get_resource_script_class(&self, path: GodotString) -> GodotString {
@@ -89,13 +89,13 @@ impl ResourceFormatLoaderVirtual for BulletMLResourceFormatLoader {
     //     PackedStringArray::from(&[GodotString::from("BulletMLFile")])
     // }
 
-    fn load(&self, path: GodotString, _original_path: GodotString, _use_sub_threads: bool, _cache_mode: i32) -> Variant {
+    fn load(&self, path: GString, _original_path: GString, _use_sub_threads: bool, _cache_mode: i32) -> Variant {
         godot_print!("Loading BulletML file at {}", path);
         let body = FileAccess::get_file_as_string(path.clone());
         let parser = BulletMLParser::with_capacities(self.refs_capacity, self.expr_capacity);
         match parser.parse(body.to_string().as_str()) {
             Ok(bml) => {
-                let mut bulletml = Gd::<BulletML>::with_base(|base| BulletML { base, bml: Rc::new(bml) });
+                let mut bulletml = Gd::<BulletML>::from_init_fn(|base| BulletML { base, bml: Rc::new(bml) });
                 bulletml.bind_mut().loaded();
 
                 Variant::from(bulletml)

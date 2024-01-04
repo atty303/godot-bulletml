@@ -7,6 +7,7 @@ var rect = Rect2(-10, -10, 20, 20)
 var on_screen = false
 var prev_position: Vector2
 
+
 func _enter_tree():
 	on_screen = false
 	RenderingServer.canvas_item_set_visibility_notifier(get_canvas_item(), true, rect, _on_visibility_enter, _on_visibility_exit)

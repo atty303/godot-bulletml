@@ -33,7 +33,7 @@ impl BulletMLPlayer {
             return;
         }
 
-        let player = self.get_node_as::<BulletMLPlayer>(".");
+        let player = self.base.get_node_as::<BulletMLPlayer>(".");
         let bml = self.bulletml.as_ref().unwrap().bind().bml.clone();
 
         let mut bullet = self.bullet_scene.instantiate_as::<Bullet>();
@@ -73,7 +73,7 @@ impl BulletMLPlayer {
 }
 
 #[godot_api]
-impl NodeVirtual for BulletMLPlayer {
+impl INode for BulletMLPlayer {
     fn init(base: Base<Node>) -> Self {
         Self {
             base,
@@ -130,7 +130,7 @@ impl Bullet {
 }
 
 #[godot_api]
-impl Node2DVirtual for Bullet {
+impl INode2D for Bullet {
     fn init(base: Base<Self::Base>) -> Self {
         Self {
             base,
@@ -152,7 +152,7 @@ impl Node2DVirtual for Bullet {
                 if !self.is_simple {
                     if !runner.is_end() {
                         let data = &mut GodotData {
-                            player: player.share(),
+                            player: player.clone(),
                             bullet: &mut self.bullet_impl,
                         };
                         let r = &mut RunnerData {
@@ -165,14 +165,14 @@ impl Node2DVirtual for Bullet {
 
                 let mx = f32::sin(self.bullet_impl.degree) * self.bullet_impl.speed;
                 let my = f32::cos(self.bullet_impl.degree) * self.bullet_impl.speed;
-                let pos = self.get_position();
-                self.set_position(pos + Vector2::new(mx, my));
+                let pos = self.base.get_position();
+                self.base.set_position(pos + Vector2::new(mx, my));
             }
             _ => {}
         }
 
-        if self.has_method(StringName::from("_bullet_process")) {
-            self.call(StringName::from("_bullet_process"), &[Variant::from(_delta)]);
+        if self.base.has_method(StringName::from("_bullet_process")) {
+            self.base.call(StringName::from("_bullet_process"), &[Variant::from(_delta)]);
         }
     }
 }

@@ -1,5 +1,7 @@
-use godot::engine::class_macros::auto_register_classes;
+use std::cell::RefCell;
+
 use godot::engine::ResourceLoader;
+use godot::init::EditorRunBehavior;
 use godot::prelude::*;
 
 use crate::resource::BulletMLResourceFormatLoader;
@@ -7,34 +9,56 @@ use crate::resource::BulletMLResourceFormatLoader;
 mod bulletml;
 mod resource;
 
+thread_local! {
+    static BULLETML_RESOURCE_FORMAT_LOADER: RefCell<Option<Gd<BulletMLResourceFormatLoader>>> = RefCell::new(None);
+}
+
 struct BulletMLExtension {
-    loader: Option<Gd<BulletMLResourceFormatLoader>>,
 }
 
 #[gdextension]
 unsafe impl ExtensionLibrary for BulletMLExtension {
-    fn load_library(handle: &mut InitHandle) -> bool {
-        handle.register_layer(InitLevel::Scene, BulletMLExtension { loader: None });
-        true
-    }
-}
-
-impl ExtensionLayer for BulletMLExtension {
-    fn initialize(&mut self) {
-        godot_print!("init");
-        auto_register_classes();
-        let loader = Gd::<BulletMLResourceFormatLoader>::with_base(|base| BulletMLResourceFormatLoader::new(base, 16, 1024));
-        self.loader = Some(loader.share());
-        ResourceLoader::singleton().add_resource_format_loader(loader.upcast());
-        godot_print!("init done");
+    fn editor_run_behavior() -> EditorRunBehavior {
+        EditorRunBehavior::AllClasses
     }
 
-    fn deinitialize(&mut self) {
-        godot_print!("deinit");
-        if let Some(loader) = &self.loader {
-            ResourceLoader::singleton().remove_resource_format_loader(loader.share().upcast());
-            self.loader = None;
+    fn min_level() -> InitLevel {
+        InitLevel::Scene
+    }
+
+    fn on_level_init(level: InitLevel) {
+        match level {
+            InitLevel::Scene => {
+                godot_print!("init");
+                // auto_register_classes();
+                let loader = Gd::<BulletMLResourceFormatLoader>::from_init_fn(|base| BulletMLResourceFormatLoader::new(base, 16, 1024));
+
+                BULLETML_RESOURCE_FORMAT_LOADER.with(|l| {
+                    godot_print!("thread id: {:?}", std::thread::current().id());
+                    l.replace(Some(loader.clone()));
+                });
+
+                ResourceLoader::singleton().add_resource_format_loader(loader.upcast());
+                godot_print!("init done");
+            }
+            _ => {}
         }
-        godot_print!("deinit done");
+    }
+
+    fn on_level_deinit(level: InitLevel) {
+        match level {
+            InitLevel::Scene => {
+                godot_print!("deinit");
+                BULLETML_RESOURCE_FORMAT_LOADER.with(|l| {
+                    if let Some(loader) = l.borrow_mut().take() {
+                        godot_print!("thread id: {:?}", std::thread::current().id());
+                        ResourceLoader::singleton().remove_resource_format_loader(loader.clone().upcast());
+                    }
+                    l.replace(None);
+                });
+                godot_print!("deinit done");
+            }
+            _ => {}
+        }
     }
 }
