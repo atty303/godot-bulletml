@@ -24,7 +24,7 @@ func _on_visibility_exit():
 	queue_free()
 
 
-func _physics_process(delta):
+func _bullet_process(delta):
 	#var pos = get_parent().position
 	var pos = position
 	line.clear_points()

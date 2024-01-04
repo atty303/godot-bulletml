@@ -13,5 +13,6 @@ begin_cap_mode = 2
 end_cap_mode = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
 scale = Vector2(0.1, 0.1)
 texture = ExtResource("2_gfegl")

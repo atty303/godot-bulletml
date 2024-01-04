@@ -132,7 +132,6 @@ impl Bullet {
 #[godot_api]
 impl Node2DVirtual for Bullet {
     fn init(base: Base<Self::Base>) -> Self {
-        godot_print!("bullet init");
         Self {
             base,
             player: None,
@@ -144,10 +143,8 @@ impl Node2DVirtual for Bullet {
     }
 
     fn physics_process(&mut self, _delta: f64) {
-        println!("bullet physics_process");
         match (&self.player, &self.bml, &mut self.runner) {
             (Some(player), Some(bml), Some(runner)) => {
-                godot_print!("bullet is initialized");
                 if !player.bind().is_playing {
                     return;
                 }
@@ -171,9 +168,11 @@ impl Node2DVirtual for Bullet {
                 let pos = self.get_position();
                 self.set_position(pos + Vector2::new(mx, my));
             }
-            _ => {
-                godot_print!("bullet is not initialized");
-            }
+            _ => {}
+        }
+
+        if self.has_method(StringName::from("_bullet_process")) {
+            self.call(StringName::from("_bullet_process"), &[Variant::from(_delta)]);
         }
     }
 }
