@@ -34,7 +34,6 @@ unsafe impl ExtensionLibrary for BulletMLExtension {
                 let loader = Gd::<BulletMLResourceFormatLoader>::from_init_fn(|base| BulletMLResourceFormatLoader::new(base, 16, 1024));
 
                 BULLETML_RESOURCE_FORMAT_LOADER.with(|l| {
-                    godot_print!("thread id: {:?}", std::thread::current().id());
                     l.replace(Some(loader.clone()));
                 });
 
@@ -51,7 +50,6 @@ unsafe impl ExtensionLibrary for BulletMLExtension {
                 godot_print!("deinit");
                 BULLETML_RESOURCE_FORMAT_LOADER.with(|l| {
                     if let Some(loader) = l.borrow_mut().take() {
-                        godot_print!("thread id: {:?}", std::thread::current().id());
                         ResourceLoader::singleton().remove_resource_format_loader(loader.clone().upcast());
                     }
                     l.replace(None);
