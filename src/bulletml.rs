@@ -20,7 +20,7 @@ struct BulletMLPlayer {
     bulletml: Option<Gd<BulletML>>,
 
     #[export]
-    bullet_scene: Gd<PackedScene>,
+    bullet_scene: Option<Gd<PackedScene>>,
 
     is_playing: bool,
     turn: u32,
@@ -29,22 +29,24 @@ struct BulletMLPlayer {
 #[godot_api]
 impl BulletMLPlayer {
     fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, state: Option<State>) {
-        if self.bullet_root.is_none() {
-            return;
+        match (self.bullet_root.as_mut(), &self.bulletml, &self.bullet_scene) {
+            (Some(bullet_root), Some(bulletml_resource), Some(bullet_scene)) => {
+                if let Some(bml) = &bulletml_resource.bind().bml {
+                    // let player = Gd::from_object(self);
+                    let player = self.base.get_node_as::<BulletMLPlayer>(".");
+                    let mut bullet = bullet_scene.instantiate_as::<Bullet>();
+                    {
+                        let mut b = bullet.bind_mut();
+                        b.init0(player, bml.clone(), is_simple, state);
+                        b.set(direction, speed);
+                    }
+
+                    bullet_root.add_child(bullet.upcast());
+                }
+            }
+            _ => {}
         }
 
-        let player = self.base.get_node_as::<BulletMLPlayer>(".");
-        let bml = self.bulletml.as_ref().unwrap().bind().bml.clone();
-
-        let mut bullet = self.bullet_scene.instantiate_as::<Bullet>();
-        {
-            let mut b = bullet.bind_mut();
-            b.init0(player, bml.clone(), is_simple, state);
-            b.set(direction, speed);
-        }
-
-        let a = self.bullet_root.as_mut().unwrap();
-        a.deref_mut().add_child(bullet.upcast());
     }
 
     #[func]
@@ -79,7 +81,7 @@ impl INode for BulletMLPlayer {
             base,
             bullet_root: None,
             bulletml: None,
-            bullet_scene: PackedScene::new(),
+            bullet_scene: None,
             is_playing: false,
             turn: 0,
         }

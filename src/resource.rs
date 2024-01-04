@@ -11,7 +11,7 @@ pub struct BulletML {
     #[base]
     base: Base<Resource>,
 
-    pub bml: Rc<bulletml::BulletML>,
+    pub bml: Option<Rc<bulletml::BulletML>>,
 }
 
 #[godot_api]
@@ -24,6 +24,12 @@ impl BulletML {
 
 #[godot_api]
 impl IResource for BulletML {
+    fn init(base: Base<Self::Base>) -> Self {
+        Self {
+            base,
+            bml: None,
+        }
+    }
 }
 
 #[derive(GodotClass)]
@@ -49,6 +55,14 @@ impl BulletMLResourceFormatLoader {
 
 #[godot_api]
 impl IResourceFormatLoader for BulletMLResourceFormatLoader {
+    fn init(base: Base<Self::Base>) -> Self {
+        Self {
+            base,
+            refs_capacity: 16,
+            expr_capacity: 1024,
+        }
+    }
+
     fn get_recognized_extensions(&self) -> PackedStringArray {
         PackedStringArray::from(&[GString::from("xml"), GString::from("bulletml")])
     }
@@ -95,7 +109,7 @@ impl IResourceFormatLoader for BulletMLResourceFormatLoader {
         let parser = BulletMLParser::with_capacities(self.refs_capacity, self.expr_capacity);
         match parser.parse(body.to_string().as_str()) {
             Ok(bml) => {
-                let mut bulletml = Gd::<BulletML>::from_init_fn(|base| BulletML { base, bml: Rc::new(bml) });
+                let mut bulletml = Gd::<BulletML>::from_init_fn(|base| BulletML { base, bml: Some(Rc::new(bml)) });
                 bulletml.bind_mut().loaded();
 
                 Variant::from(bulletml)
