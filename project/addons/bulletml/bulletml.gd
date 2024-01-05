@@ -2,44 +2,55 @@
 extends EditorPlugin
 
 const EditorPanel = preload("res://addons/bulletml/Editor.tscn")
-
+const CONFIG_SECTION: String = "BulletMLPlugin"
+const CONFIG_LAYOUT: String = "layout"
 var inspector_plugin: EditorInspectorPlugin
 var preview_inspector_plugin: EditorInspectorPlugin
 var editor_panel
 var code_edit: CodeEdit
+var preview_height: int = 0
+var config = ConfigFile.new()
+
 
 func _enter_tree():
+	_load_config()
+
+	preview_height = config.get_value(CONFIG_LAYOUT, "preview_height", 128)
+
 	preview_inspector_plugin = preload("res://addons/bulletml/inspector/main.gd").new()
 	add_inspector_plugin(preview_inspector_plugin)
-	
+	preview_inspector_plugin.connect("preview_height_changed", _on_preview_height_changed)
+	preview_inspector_plugin.set_preview_height(preview_height)
+
 	# Initialization of the plugin goes here.
 	inspector_plugin = preload("res://addons/bulletml/inspector.gd").new()
 	add_inspector_plugin(inspector_plugin)
 	inspector_plugin.inspector = get_editor_interface().get_inspector()
-	
+
 	editor_panel = EditorPanel.instantiate()
 	get_editor_interface().get_editor_main_screen().add_child(editor_panel)
 	_make_visible(false)
-	
+
 	code_edit = editor_panel.find_child("CodeEdit") # get_node
-	
+
 	connect("resource_saved", resource_saved)
-	
-	var s = get_editor_interface().get_editor_settings()
-	print(s.get("shortcuts"))
+
 	# var c = editor_panel.get_node("HBoxContainer")
 	# c.add_child(get_editor_interface().get_script_editor())
-	
+
 
 func _exit_tree():
-	remove_inspector_plugin(preview_inspector_plugin)
+	if preview_inspector_plugin:
+		remove_inspector_plugin(preview_inspector_plugin)
+		preview_inspector_plugin = null
+
 	remove_inspector_plugin(inspector_plugin)
-	
+
 	if editor_panel:
 		editor_panel.queue_free()
 
 
-func _has_main_screen():
+func _has_main_screen() -> bool:
 	return true
 
 
@@ -53,7 +64,8 @@ func _get_plugin_name():
 
 
 func _get_plugin_icon():
-	return get_editor_interface().get_base_control().get_theme_icon("Node", "EditorIcons")
+	return preload("res://addons/bulletml/bulletml-logo-16.png")
+	#return get_editor_interface().get_base_control().get_theme_icon("Node", "EditorIcons")
 
 
 #func _edit(object):
@@ -69,3 +81,28 @@ func _get_plugin_icon():
 
 func resource_saved(r):
 	print("resource_saved")
+
+
+func _on_preview_height_changed(height: int):
+	preview_height = height
+	config.set_value(CONFIG_LAYOUT, "preview_height", preview_height)
+	_save_config()
+
+
+func _get_config_path() -> String:
+	var dir: String = EditorInterface.get_editor_paths().get_project_settings_dir()
+	return dir.path_join("plugins/bulletml/settings.cfg")
+
+
+func _load_config():
+	var path = _get_config_path()
+	if FileAccess.file_exists(path):
+		config.load(path)
+	else:
+		DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+		config.save(path)
+
+
+func _save_config():
+	var path = _get_config_path()
+	config.save(path)
