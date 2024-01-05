@@ -1,4 +1,4 @@
-use std::ops::{Deref, DerefMut};
+use std::ops::Deref;
 use std::rc::Rc;
 
 use bulletml::{AppRunner, Runner, RunnerData, State};
@@ -65,12 +65,21 @@ impl BulletMLPlayer {
 
     #[func]
     fn clear(&mut self) {
+        self.turn = 0;
         let a = self.bullet_root.as_mut().unwrap();
-
-        if let Some(child) = a.deref_mut().get_child(0) {
-            a.deref_mut().remove_child(child);
+        for mut child in a.get_children().iter_shared() {
+            child.queue_free()
         }
+    }
 
+    #[func]
+    fn is_playing(&self) -> bool {
+        self.is_playing
+    }
+
+    #[func]
+    fn get_turn(&self) -> u32 {
+        self.turn
     }
 }
 
