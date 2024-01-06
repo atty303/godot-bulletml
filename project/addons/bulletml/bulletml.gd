@@ -4,7 +4,6 @@ extends EditorPlugin
 const EditorPanel = preload("res://addons/bulletml/Editor.tscn")
 const CONFIG_SECTION: String = "BulletMLPlugin"
 const CONFIG_LAYOUT: String = "layout"
-var inspector_plugin: EditorInspectorPlugin
 var preview_inspector_plugin: EditorInspectorPlugin
 var editor_panel
 var code_edit: CodeEdit
@@ -22,11 +21,6 @@ func _enter_tree():
 	preview_inspector_plugin.connect("preview_height_changed", _on_preview_height_changed)
 	preview_inspector_plugin.set_preview_height(preview_height)
 
-	# Initialization of the plugin goes here.
-	inspector_plugin = preload("res://addons/bulletml/inspector.gd").new()
-	add_inspector_plugin(inspector_plugin)
-	inspector_plugin.inspector = get_editor_interface().get_inspector()
-
 	editor_panel = EditorPanel.instantiate()
 	get_editor_interface().get_editor_main_screen().add_child(editor_panel)
 	_make_visible(false)
@@ -43,8 +37,6 @@ func _exit_tree():
 	if preview_inspector_plugin:
 		remove_inspector_plugin(preview_inspector_plugin)
 		preview_inspector_plugin = null
-
-	remove_inspector_plugin(inspector_plugin)
 
 	if editor_panel:
 		editor_panel.queue_free()
@@ -65,7 +57,6 @@ func _get_plugin_name():
 
 func _get_plugin_icon():
 	return preload("res://addons/bulletml/bulletml-logo-16.png")
-	#return get_editor_interface().get_base_control().get_theme_icon("Node", "EditorIcons")
 
 
 #func _edit(object):
