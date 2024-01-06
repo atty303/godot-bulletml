@@ -27,8 +27,6 @@ func _enter_tree():
 
 	code_edit = editor_panel.find_child("CodeEdit") # get_node
 
-	connect("resource_saved", resource_saved)
-
 	# var c = editor_panel.get_node("HBoxContainer")
 	# c.add_child(get_editor_interface().get_script_editor())
 
@@ -68,10 +66,6 @@ func _get_plugin_icon():
 
 #func _handles(object):
 #	return object is BulletML
-
-
-func resource_saved(r):
-	print("resource_saved")
 
 
 func _on_preview_height_changed(height: int):
