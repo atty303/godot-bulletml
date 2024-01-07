@@ -17,7 +17,6 @@ signal viewport_height_changed(height: int)
 
 func _ready():
     if bulletml:
-        print("_ready: ", bulletml)
         player.bulletml = bulletml
         player.play()
 

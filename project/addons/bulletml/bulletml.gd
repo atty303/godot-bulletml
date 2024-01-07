@@ -80,25 +80,15 @@ func _on_preview_height_changed(height: int):
 
 func _on_edited_object_changed():
     current_inspector_object = get_editor_interface().get_inspector().get_edited_object()
-    print("_on_edited_object_changed: ", current_inspector_object)
 
 
 func _on_resources_reload(paths):
-    print("_on_resources_reload: ", paths)
-    print("current_inspector_object: ", current_inspector_object)
     for path in paths:
         var resource = current_inspector_object as BulletML
-        print("resource: ", resource)
-        print("resource_path: ", resource.resource_path)
         if resource and resource.resource_path == path:
             get_editor_interface().inspect_object(null, "", true)
-            # get_editor_interface().get_resource_filesystem().update_file(path)
-
-            print(ResourceLoader.load_threaded_get_status(path))
             var r = ResourceLoader.load(path, "BulletML", ResourceLoader.CACHE_MODE_IGNORE)
-            print(ResourceLoader.load_threaded_get_status(path))
             r.take_over_path(path)
-            print("loaded:", r, " path: ", r.resource_path)
             get_editor_interface().inspect_object(r, "", true)
 
 
