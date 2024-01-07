@@ -1,6 +1,13 @@
 # [WIP] godot-bulletml
 
+![2024-01-08_04-24-38](https://github.com/atty303/godot-bulletml/assets/316079/9f08ddf4-1ab9-4455-b17d-aaee7d67577e)
+
 BulletML GDExtension for Godot
+
+## Features
+
+- `BulletMLPlayer` node
+- BulletML Inspector Plugin
 
 ## Usage
 
