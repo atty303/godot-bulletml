@@ -14,7 +14,8 @@ const CONFIG_SECTION = "preview"
 
 @onready var viewport = $SubViewportContainer
 @onready var player = $SubViewportContainer/SubViewport/BulletMLPlayer
-@onready var bullet_root = %BulletRoot
+@onready var bullet_counter_label: Label = %BulletCounterLabel
+@onready var bullet_root: Marker2D = %BulletRoot
 @onready var turn_label: Label = %TurnLabel
 
 var config: ConfigFile = null
@@ -32,6 +33,9 @@ func _ready():
         player.bulletml = bulletml
         player.play()
 
+
+func _process(delta: float) -> void:
+    bullet_counter_label.text = str(bullet_root.get_child_count())
 
 func _physics_process(delta: float) -> void:
     if player.is_playing():
