@@ -28,7 +28,7 @@ struct BulletMLPlayer {
 
 #[godot_api]
 impl BulletMLPlayer {
-    fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, state: Option<State>) {
+    fn add_bullet(&mut self, is_simple: bool, direction: f32, speed: f32, label: &Option<String>, state: Option<State>) {
         match (self.bullet_root.as_mut(), &self.bulletml, &self.bullet_scene) {
             (Some(bullet_root), Some(bulletml_resource), Some(bullet_scene)) => {
                 if let Some(bml) = &bulletml_resource.bind().bml {
@@ -37,7 +37,7 @@ impl BulletMLPlayer {
                     let mut bullet = bullet_scene.instantiate_as::<Bullet>();
                     {
                         let mut b = bullet.bind_mut();
-                        b.init0(player, bml.clone(), is_simple, state);
+                        b.init0(player, bml.clone(), label, is_simple, state);
                         b.set(direction, speed);
                     }
 
@@ -55,7 +55,7 @@ impl BulletMLPlayer {
             return;
         }
         self.is_playing = true;
-        self.add_bullet(false, 0.0, 0.0, None);
+        self.add_bullet(false, 0.0, 0.0, &None, None);
     }
 
     #[func]
@@ -111,6 +111,7 @@ struct Bullet {
 
     player: Option<Gd<BulletMLPlayer>>,
     bml: Option<Rc<bulletml::BulletML>>,
+    label: Option<String>,
     runner: Option<Runner<GodotRunner>>,
     is_simple: bool,
 
@@ -119,9 +120,10 @@ struct Bullet {
 
 #[godot_api]
 impl Bullet {
-    fn init0(&mut self, player: Gd<BulletMLPlayer>, bml: Rc<bulletml::BulletML>, is_simple: bool, state: Option<State>) {
+    fn init0(&mut self, player: Gd<BulletMLPlayer>, bml: Rc<bulletml::BulletML>, label: &Option<String>, is_simple: bool, state: Option<State>) {
         self.player = Some(player);
         self.bml = Some(bml.clone());
+        self.label = label.clone();
         self.runner = Some(Runner::new(GodotRunner::new(), bml.clone().deref()));
         self.is_simple = is_simple;
 
@@ -147,6 +149,7 @@ impl INode2D for Bullet {
             base,
             player: None,
             bml: None,
+            label: None,
             runner: None,
             is_simple: true,
             bullet_impl: BulletImpl { degree: 0.0, speed: 0.0 },
@@ -227,12 +230,12 @@ impl<'a> AppRunner<GodotData<'a>> for GodotRunner {
         1.0
     }
 
-    fn create_simple_bullet(&mut self, data: &mut GodotData, direction: f64, speed: f64) {
-        data.player.bind_mut().add_bullet(true, dtor(direction as f32), speed as f32, None);
+    fn create_simple_bullet(&mut self, data: &mut GodotData, direction: f64, speed: f64, label: &Option<String>) {
+        data.player.bind_mut().add_bullet(true, dtor(direction as f32), speed as f32, label, None);
     }
 
-    fn create_bullet(&mut self, data: &mut GodotData, state: State, direction: f64, speed: f64) {
-        data.player.bind_mut().add_bullet(false, dtor(direction as f32), speed as f32, Some(state));
+    fn create_bullet(&mut self, data: &mut GodotData, state: State, direction: f64, speed: f64, label: &Option<String>) {
+        data.player.bind_mut().add_bullet(false, dtor(direction as f32), speed as f32, label, Some(state));
     }
 
     fn get_turn(&self, data: &GodotData) -> u32 {

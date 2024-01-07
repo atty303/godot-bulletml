@@ -8,4 +8,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 godot = { git = "https://github.com/godot-rust/gdext", rev = "5e18af87a13bf8d40b4f50bfcb180228e227b773" }
-bulletml = "0.2.1"
+bulletml = { git = "https://github.com/atty303/bulletyaml_rs.git", rev = "9fb7360b8da109bc751ec91397393004ef6d9731" }

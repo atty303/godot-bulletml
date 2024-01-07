@@ -13,9 +13,8 @@ dependencies = [
 
 [[package]]
 name = "bulletml"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6edeb27767273db94f8308a024d1b90254a42291a538a48e848789027584a3fe"
+version = "0.3.0"
+source = "git+https://github.com/atty303/bulletyaml_rs.git?rev=9fb7360b8da109bc751ec91397393004ef6d9731#9fb7360b8da109bc751ec91397393004ef6d9731"
 dependencies = [
  "derive-new",
  "fasteval",
