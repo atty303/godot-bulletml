@@ -19,6 +19,8 @@ func _enter_tree():
 
     preview_inspector_plugin = preload("res://addons/bulletml/inspector/main.gd").new()
     add_inspector_plugin(preview_inspector_plugin)
+    preview_inspector_plugin.config = config
+    preview_inspector_plugin.config_changed.connect(_save_config)
     preview_inspector_plugin.connect("preview_height_changed", _on_preview_height_changed)
     preview_inspector_plugin.set_preview_height(preview_height)
 

@@ -2,6 +2,9 @@
 extends VBoxContainer
 
 signal viewport_height_changed(height: int)
+signal config_changed
+
+const CONFIG_SECTION = "preview"
 
 @export var bulletml: BulletML:
     set(value):
@@ -12,10 +15,19 @@ signal viewport_height_changed(height: int)
 
 @onready var viewport = $SubViewportContainer
 @onready var player = $SubViewportContainer/SubViewport/BulletMLPlayer
+@onready var bullet_root = %BulletRoot
 @onready var turn_label: Label = %TurnLabel
+
+var config: ConfigFile = null
 
 
 func _ready():
+    assert(config, "config is not set")
+
+    bullet_root.position = config.get_value(CONFIG_SECTION, "bullet_root_position", Vector2(0, 0))
+
+    viewport.gui_input.connect(_on_sub_viewport_container_gui_input)
+
     if bulletml:
         player.bulletml = bulletml
         player.play()
@@ -43,3 +55,11 @@ func _on_play_button_pressed():
     player.stop()
     player.clear()
     player.play()
+
+
+func _on_sub_viewport_container_gui_input(event: InputEvent):
+    if event is InputEventMouseMotion or event is InputEventMouseButton:
+        if event.button_mask & MOUSE_BUTTON_MASK_RIGHT:
+            bullet_root.position = event.position
+            config.set_value(CONFIG_SECTION, "bullet_root_position", event.position)
+            config_changed.emit()
