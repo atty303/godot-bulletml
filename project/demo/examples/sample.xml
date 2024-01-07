@@ -4,7 +4,8 @@
 <bulletml type="vertical"
           xmlns="http://www.asahi-net.or.jp/~cs8k-cyu/bulletml">
     <action label="top">
-        <repeat> <times>600</times>
+        <repeat>
+            <times>600</times>
             <action>
                 <fire>
                     <direction>-45+$rand*90</direction>
