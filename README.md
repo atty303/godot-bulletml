@@ -1,8 +1,11 @@
-# [WIP] godot-bulletml
+# ![bulletml-logo-16](https://github.com/atty303/godot-bulletml/assets/316079/41abc082-30e1-484f-8f85-dd4f9a99f950) godot-bulletml
 
-![2024-01-08_04-24-38](https://github.com/atty303/godot-bulletml/assets/316079/9f08ddf4-1ab9-4455-b17d-aaee7d67577e)
+> [!WARNING]
+> This project is under development.
 
-BulletML GDExtension for Godot
+[BulletML](http://www.asahi-net.or.jp/~cs8k-cyu/bulletml/index_e.html) [GDExtension](https://docs.godotengine.org/en/stable/tutorials/scripting/gdextension/what_is_gdextension.html) for [Godot Engine](https://godotengine.org/) written by Rust.
+
+![2024-01-08_04-27-18](https://github.com/atty303/godot-bulletml/assets/316079/3c916f35-1a25-4897-8c12-5462edc8dd24)
 
 ## Features
 
