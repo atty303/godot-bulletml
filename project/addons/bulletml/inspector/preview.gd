@@ -1,7 +1,6 @@
 @tool
 extends VBoxContainer
 
-signal viewport_height_changed(height: int)
 signal config_changed
 
 const CONFIG_SECTION = "preview"
@@ -24,9 +23,10 @@ var config: ConfigFile = null
 func _ready():
     assert(config, "config is not set")
 
-    bullet_root.position = config.get_value(CONFIG_SECTION, "bullet_root_position", Vector2(0, 0))
-
+    viewport.custom_minimum_size = config.get_value(CONFIG_SECTION, "viewport_size", Vector2i(64, 64))
     viewport.gui_input.connect(_on_sub_viewport_container_gui_input)
+
+    bullet_root.position = config.get_value(CONFIG_SECTION, "bullet_root_position", Vector2(0, 0))
 
     if bulletml:
         player.bulletml = bulletml
@@ -41,14 +41,10 @@ func _physics_process(delta: float) -> void:
 
 
 func _on_grabber_dragged(offset: int):
-    var h = viewport.custom_minimum_size.y + offset
-    viewport.custom_minimum_size = Vector2i(64, h)
-    viewport_height_changed.emit(h)
-
-
-func set_viewport_height(height: int):
-    await ready
-    viewport.custom_minimum_size = Vector2i(64, height)
+    var size = Vector2i(viewport.custom_minimum_size.x, viewport.custom_minimum_size.y + offset)
+    viewport.custom_minimum_size = size
+    config.set_value(CONFIG_SECTION, "viewport_size", size)
+    config_changed.emit()
 
 
 func _on_play_button_pressed():

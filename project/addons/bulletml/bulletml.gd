@@ -7,22 +7,17 @@ const CONFIG_LAYOUT: String  = "layout"
 var preview_inspector_plugin: EditorInspectorPlugin
 var editor_panel
 var code_edit: CodeEdit
-var preview_height: int      = 0
-var config                   = ConfigFile.new()
+var config = ConfigFile.new()
 var current_inspector_object: Object
 
 
 func _enter_tree():
     _load_config()
 
-    preview_height = config.get_value(CONFIG_LAYOUT, "preview_height", 128)
-
     preview_inspector_plugin = preload("res://addons/bulletml/inspector/main.gd").new()
     add_inspector_plugin(preview_inspector_plugin)
     preview_inspector_plugin.config = config
     preview_inspector_plugin.config_changed.connect(_save_config)
-    preview_inspector_plugin.connect("preview_height_changed", _on_preview_height_changed)
-    preview_inspector_plugin.set_preview_height(preview_height)
 
     editor_panel = EditorPanel.instantiate()
     get_editor_interface().get_editor_main_screen().add_child(editor_panel)
@@ -72,12 +67,6 @@ func _get_plugin_icon():
 
     #func _handles(object):
     #	return object is BulletML
-
-
-func _on_preview_height_changed(height: int):
-    preview_height = height
-    config.set_value(CONFIG_LAYOUT, "preview_height", preview_height)
-    _save_config()
 
 
 func _on_edited_object_changed():
