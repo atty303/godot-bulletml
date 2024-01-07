@@ -1,4 +1,4 @@
-# ![bulletml-logo-16](https://github.com/atty303/godot-bulletml/assets/316079/41abc082-30e1-484f-8f85-dd4f9a99f950) godot-bulletml
+# ![bulletml-logo](https://github.com/atty303/godot-bulletml/assets/316079/40c8c18e-fe38-4907-92b6-8dbdd7c29441) godot-bulletml
 
 > [!WARNING]
 > This project is under development.
