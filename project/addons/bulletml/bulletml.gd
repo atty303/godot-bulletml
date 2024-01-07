@@ -1,93 +1,121 @@
 @tool
 extends EditorPlugin
 
-const EditorPanel = preload("res://addons/bulletml/Editor.tscn")
+const EditorPanel            = preload("res://addons/bulletml/Editor.tscn")
 const CONFIG_SECTION: String = "BulletMLPlugin"
-const CONFIG_LAYOUT: String = "layout"
+const CONFIG_LAYOUT: String  = "layout"
 var preview_inspector_plugin: EditorInspectorPlugin
 var editor_panel
 var code_edit: CodeEdit
-var preview_height: int = 0
-var config = ConfigFile.new()
+var preview_height: int      = 0
+var config                   = ConfigFile.new()
+var current_inspector_object: Object
 
 
 func _enter_tree():
-	_load_config()
+    _load_config()
 
-	preview_height = config.get_value(CONFIG_LAYOUT, "preview_height", 128)
+    preview_height = config.get_value(CONFIG_LAYOUT, "preview_height", 128)
 
-	preview_inspector_plugin = preload("res://addons/bulletml/inspector/main.gd").new()
-	add_inspector_plugin(preview_inspector_plugin)
-	preview_inspector_plugin.connect("preview_height_changed", _on_preview_height_changed)
-	preview_inspector_plugin.set_preview_height(preview_height)
+    preview_inspector_plugin = preload("res://addons/bulletml/inspector/main.gd").new()
+    add_inspector_plugin(preview_inspector_plugin)
+    preview_inspector_plugin.connect("preview_height_changed", _on_preview_height_changed)
+    preview_inspector_plugin.set_preview_height(preview_height)
 
-	editor_panel = EditorPanel.instantiate()
-	get_editor_interface().get_editor_main_screen().add_child(editor_panel)
-	_make_visible(false)
+    editor_panel = EditorPanel.instantiate()
+    get_editor_interface().get_editor_main_screen().add_child(editor_panel)
+    _make_visible(false)
 
-	code_edit = editor_panel.find_child("CodeEdit") # get_node
+    code_edit = editor_panel.find_child("CodeEdit") # get_node
 
-	# var c = editor_panel.get_node("HBoxContainer")
-	# c.add_child(get_editor_interface().get_script_editor())
+    get_editor_interface().get_inspector().edited_object_changed.connect(_on_edited_object_changed)
+    get_editor_interface().get_resource_filesystem().resources_reload.connect(_on_resources_reload)
+
+    # var c = editor_panel.get_node("HBoxContainer")
+    # c.add_child(get_editor_interface().get_script_editor())
 
 
 func _exit_tree():
-	if preview_inspector_plugin:
-		remove_inspector_plugin(preview_inspector_plugin)
-		preview_inspector_plugin = null
+    if preview_inspector_plugin:
+        remove_inspector_plugin(preview_inspector_plugin)
+        preview_inspector_plugin = null
 
-	if editor_panel:
-		editor_panel.queue_free()
+    if editor_panel:
+        editor_panel.queue_free()
 
 
 func _has_main_screen() -> bool:
-	return true
+    return true
 
 
 func _make_visible(visible):
-	if editor_panel:
-		editor_panel.visible = visible
+    if editor_panel:
+        editor_panel.visible = visible
 
 
 func _get_plugin_name():
-	return "BulletML"
+    return "BulletML"
 
 
 func _get_plugin_icon():
-	return preload("res://addons/bulletml/bulletml-logo-16.png")
+    return preload("res://addons/bulletml/bulletml-logo-16.png")
 
 
-#func _edit(object):
-#	if object is BulletML and code_edit:
-#		print("_edit")
-#		var file = FileAccess.open(object.resource_path, FileAccess.READ)
-#		code_edit.text = file.get_as_text(true)
+    #func _edit(object):
+    #	if object is BulletML and code_edit:
+    #		print("_edit")
+    #		var file = FileAccess.open(object.resource_path, FileAccess.READ)
+    #		code_edit.text = file.get_as_text(true)
 
 
-#func _handles(object):
-#	return object is BulletML
+    #func _handles(object):
+    #	return object is BulletML
 
 
 func _on_preview_height_changed(height: int):
-	preview_height = height
-	config.set_value(CONFIG_LAYOUT, "preview_height", preview_height)
-	_save_config()
+    preview_height = height
+    config.set_value(CONFIG_LAYOUT, "preview_height", preview_height)
+    _save_config()
+
+
+func _on_edited_object_changed():
+    current_inspector_object = get_editor_interface().get_inspector().get_edited_object()
+    print("_on_edited_object_changed: ", current_inspector_object)
+
+
+func _on_resources_reload(paths):
+    print("_on_resources_reload: ", paths)
+    print("current_inspector_object: ", current_inspector_object)
+    for path in paths:
+        var resource = current_inspector_object as BulletML
+        print("resource: ", resource)
+        print("resource_path: ", resource.resource_path)
+        if resource and resource.resource_path == path:
+            get_editor_interface().inspect_object(null, "", true)
+            # get_editor_interface().get_resource_filesystem().update_file(path)
+
+            print(ResourceLoader.load_threaded_get_status(path))
+            var r = ResourceLoader.load(path, "BulletML", ResourceLoader.CACHE_MODE_IGNORE)
+            print(ResourceLoader.load_threaded_get_status(path))
+            r.take_over_path(path)
+            print("loaded:", r, " path: ", r.resource_path)
+            get_editor_interface().inspect_object(r, "", true)
 
 
 func _get_config_path() -> String:
-	var dir: String = EditorInterface.get_editor_paths().get_project_settings_dir()
-	return dir.path_join("plugins/bulletml/settings.cfg")
+    var dir: String = EditorInterface.get_editor_paths().get_project_settings_dir()
+    return dir.path_join("plugins/bulletml/settings.cfg")
 
 
 func _load_config():
-	var path = _get_config_path()
-	if FileAccess.file_exists(path):
-		config.load(path)
-	else:
-		DirAccess.make_dir_recursive_absolute(path.get_base_dir())
-		config.save(path)
+    var path = _get_config_path()
+    if FileAccess.file_exists(path):
+        config.load(path)
+    else:
+        DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+        config.save(path)
 
 
 func _save_config():
-	var path = _get_config_path()
-	config.save(path)
+    var path = _get_config_path()
+    config.save(path)

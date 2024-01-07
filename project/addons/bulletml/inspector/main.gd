@@ -10,6 +10,7 @@ func _can_handle(object):
 
 
 func _parse_begin(object) -> void:
+    print("_parse_begin: ", object)
     var bulletml = object as BulletML
     if not bulletml:
         return
