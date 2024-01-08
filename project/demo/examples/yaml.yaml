@@ -1,7 +1,7 @@
 nodes:
-    - aaa
-    - bbb
-    - ccc:
-        ddd:
-            a: |
-            hoge
+	- aaa
+	- bbb
+	- ccc:
+		ddd:
+			a: |
+			hoge

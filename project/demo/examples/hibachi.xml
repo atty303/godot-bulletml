@@ -63,7 +63,7 @@
 
     <action label="top">
         <repeat>
-            <times>2</times>
+            <times>4</times>
             <action>
                 <actionRef label="right"/>
                 <actionRef label="left"/>
