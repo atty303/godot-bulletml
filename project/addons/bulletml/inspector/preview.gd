@@ -37,7 +37,7 @@ func _ready():
 
 func _process(delta: float) -> void:
 	bullet_counter_label.text = str(bullet_canvas.get_count())
-	pass
+
 
 func _physics_process(delta: float) -> void:
 	if bullet_canvas and player.is_playing():
