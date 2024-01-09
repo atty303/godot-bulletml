@@ -105,10 +105,12 @@ impl INode for BulletMLCanvas {
         let mut factory = BulletFactory {
             pool: &mut new_pool,
         };
+
         let rs = RenderingServer::singleton();
+        let physics_ticks_per_second = Engine::singleton().get_physics_ticks_per_second() as f64;
 
         while let Some((bullet, _bullet_ref)) = iter.next() {
-            bullet.bind_mut().process(delta, &mut factory, self.turn, rs.clone());
+            bullet.bind_mut().process(delta, &mut factory, self.turn, rs.clone(), physics_ticks_per_second);
         }
 
         self.turn += 1;

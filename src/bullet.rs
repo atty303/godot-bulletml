@@ -96,7 +96,7 @@ impl BulletMLBullet {
         self.data.update_velocity();
     }
 
-    pub(crate) fn process(&mut self, delta: f64, factory: &mut BulletFactory, turn: u32, mut rs: Gd<RenderingServer>) {
+    pub(crate) fn process(&mut self, delta: f64, factory: &mut BulletFactory, turn: u32, mut rs: Gd<RenderingServer>, physics_ticks_per_second: f64) {
         if !self.is_simple && !self.runner.is_end() {
             let bml = self.bml.clone();
             let runner = &mut self.runner;
@@ -112,7 +112,7 @@ impl BulletMLBullet {
             runner.run(runner_data);
         }
 
-        self.data.position = self.data.position + self.data.velocity * (delta * 60.0) as real;
+        self.data.position = self.data.position + self.data.velocity * (delta * physics_ticks_per_second) as real;
 
         rs.canvas_item_set_transform(self.canvas_item_rid, self.data.transform.translated(self.data.position));
     }
