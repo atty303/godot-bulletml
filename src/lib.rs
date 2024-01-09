@@ -4,13 +4,13 @@ use godot::engine::ResourceLoader;
 use godot::init::EditorRunBehavior;
 use godot::prelude::*;
 
-use crate::bulletml_resource::BulletMLResourceFormatLoader;
+use crate::resource::BulletMLResourceFormatLoader;
 
-mod bulletml_canvas;
+mod canvas;
 mod pool;
-mod bulletml_bullet;
-mod bulletml_player;
-mod bulletml_resource;
+mod bullet;
+mod player;
+mod resource;
 
 thread_local! {
     static BULLETML_RESOURCE_FORMAT_LOADER: RefCell<Option<Gd<BulletMLResourceFormatLoader>>> = RefCell::new(None);

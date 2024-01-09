@@ -3,8 +3,8 @@ use std::sync::Arc;
 use godot::engine::{Engine, RenderingServer, Viewport};
 use godot::prelude::*;
 
-use crate::bulletml_bullet::BulletMLBullet;
-use crate::bulletml_player::BulletMLPlayer;
+use crate::bullet::BulletMLBullet;
+use crate::player::BulletMLPlayer;
 use crate::pool::{Pool, PoolActorRef, PoolGetInstanceArea};
 
 #[derive(GodotClass)]

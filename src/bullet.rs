@@ -5,9 +5,9 @@ use bulletml;
 use godot::engine::RenderingServer;
 use godot::prelude::*;
 
-use crate::bulletml_canvas::BulletFactory;
-use crate::bulletml_player::BulletMLPlayer;
-use crate::bulletml_resource::get_empty_bulletml;
+use crate::canvas::BulletFactory;
+use crate::player::BulletMLPlayer;
+use crate::resource::get_empty_bulletml;
 
 struct BulletData {
     player: Gd<BulletMLPlayer>,

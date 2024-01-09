@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use crate::bulletml_canvas::BulletMLCanvas;
-use crate::bulletml_resource::BulletMLResource;
+use crate::canvas::BulletMLCanvas;
+use crate::resource::BulletMLResource;
 use crate::pool::PoolActorRef;
 
 #[derive(GodotClass)]
