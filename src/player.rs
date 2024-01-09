@@ -80,7 +80,6 @@ impl INode2D for BulletMLPlayer {
             canvas.bind_mut().maybe_index_mut(*top_bullet_ref).map(|bullet| {
                 bullet.bind_mut().set_transform(Transform2D::IDENTITY.translated(self.base.get_position()));
             });
-
         }
     }
 }

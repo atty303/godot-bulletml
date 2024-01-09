@@ -28,7 +28,7 @@ func _ready():
 	viewport.gui_input.connect(_on_sub_viewport_container_gui_input)
 
 	bullet_canvas.create(6000)
-	# bullet_root.position = config.get_value(CONFIG_SECTION, "bullet_root_position", Vector2(0, 0))
+	player.position = config.get_value(CONFIG_SECTION, "bullet_root_position", Vector2(0, 0))
 
 	if bulletml:
 		player.bulletml = bulletml
@@ -62,6 +62,6 @@ func _on_play_button_pressed():
 func _on_sub_viewport_container_gui_input(event: InputEvent):
 	if event is InputEventMouseMotion or event is InputEventMouseButton:
 		if event.button_mask & MOUSE_BUTTON_MASK_RIGHT:
-			# bullet_root.position = event.position
+			player.position = event.position
 			config.set_value(CONFIG_SECTION, "bullet_root_position", event.position)
 			config_changed.emit()
