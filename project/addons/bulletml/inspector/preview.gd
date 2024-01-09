@@ -40,7 +40,7 @@ func _process(delta: float) -> void:
 	pass
 
 func _physics_process(delta: float) -> void:
-	if bullet_canvas:
+	if bullet_canvas and player.is_playing():
 		turn_label.text = str(bullet_canvas.get_turn())
 	else:
 		turn_label.text = "-"
