@@ -11,7 +11,7 @@ pub struct BulletMLPlayer {
     base: Base<Node2D>,
 
     #[export]
-    node: Option<Gd<BulletMLCanvas>>,
+    canvas: Option<Gd<BulletMLCanvas>>,
 
     #[export]
     bulletml: Option<Gd<BulletMLResource>>,
@@ -27,7 +27,7 @@ impl BulletMLPlayer {
     #[func]
     fn play(&mut self) {
         let player = self.to_gd();
-        match (&mut self.node, &self.bulletml) {
+        match (&mut self.canvas, &self.bulletml) {
             (Some(ref mut node), Some(bulletml)) => {
                 self.is_playing = true;
                 self.top_bullet_ref = node.bind_mut().create_bullet_new(player, bulletml.bind().bml.clone());
@@ -67,7 +67,7 @@ impl INode2D for BulletMLPlayer {
     fn init(base: Base<Node2D>) -> Self {
         Self {
             base,
-            node: None,
+            canvas: None,
             bulletml: None,
             is_playing: false,
             rank: 1.0,
@@ -76,7 +76,7 @@ impl INode2D for BulletMLPlayer {
     }
 
     fn physics_process(&mut self, _delta: f64) {
-        if let (Some(ref mut canvas), Some(top_bullet_ref)) = (&mut self.node, &self.top_bullet_ref) {
+        if let (Some(ref mut canvas), Some(top_bullet_ref)) = (&mut self.canvas, &self.top_bullet_ref) {
             canvas.bind_mut().maybe_index_mut(*top_bullet_ref).map(|bullet| {
                 bullet.bind_mut().set_transform(Transform2D::IDENTITY.translated(self.base.get_position()));
             });

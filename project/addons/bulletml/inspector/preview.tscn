@@ -37,8 +37,8 @@ handle_input_locally = false
 size = Vector2i(1280, 752)
 render_target_update_mode = 4
 
-[node name="BulletMLPlayer" type="BulletMLPlayer" parent="SubViewportContainer/SubViewport" node_paths=PackedStringArray("node")]
-node = NodePath("../BulletMLCanvas")
+[node name="BulletMLPlayer" type="BulletMLPlayer" parent="SubViewportContainer/SubViewport" node_paths=PackedStringArray("canvas")]
+canvas = NodePath("../BulletMLCanvas")
 unique_name_in_owner = true
 
 [node name="BulletMLCanvas" type="BulletMLCanvas" parent="SubViewportContainer/SubViewport"]
@@ -76,7 +76,7 @@ vertical_alignment = 1
 [node name="TurnLabel" type="Label" parent="PlayControl/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "2115"
+text = "323"
 vertical_alignment = 1
 
 [connection signal="dragged" from="Grabber" to="." method="_on_grabber_dragged"]
