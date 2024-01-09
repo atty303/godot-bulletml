@@ -5,3 +5,4 @@ reloadable = true
 
 [libraries]
 windows.debug.x86_64 = "bin/libbulletml.windows.debug.x86_64.dll"
+windows.release.x86_64 = "bin/libbulletml.windows.release.x86_64.dll"

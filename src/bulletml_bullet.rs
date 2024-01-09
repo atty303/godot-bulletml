@@ -92,7 +92,7 @@ impl BulletMLBullet {
         self.data.update_velocity();
     }
 
-    pub(crate) fn process(&mut self, delta: f64, factory: &mut BulletFactory, turn: u32) {
+    pub(crate) fn process(&mut self, delta: f64, factory: &mut BulletFactory, turn: u32, mut rs: Gd<RenderingServer>) {
         if !self.is_simple && !self.runner.is_end() {
             let bml = self.bml.clone();
             let runner = &mut self.runner;
@@ -110,7 +110,7 @@ impl BulletMLBullet {
 
         self.data.position = self.data.position + self.data.velocity;// * (delta as real);
 
-        RenderingServer::singleton().canvas_item_set_transform(self.canvas_item_rid, Transform2D::IDENTITY.translated(self.data.position));
+        rs.canvas_item_set_transform(self.canvas_item_rid, Transform2D::IDENTITY.translated(self.data.position));
     }
 }
 

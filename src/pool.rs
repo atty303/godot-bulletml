@@ -1,7 +1,7 @@
 use std::ops::{Index, IndexMut};
 
 pub struct PoolActor<T> {
-    actor: T,
+    pub(crate) actor: T,
     state: ActorState,
 }
 
@@ -17,7 +17,7 @@ pub struct PoolActorRef {
 }
 
 pub struct Pool<T> {
-    actors: Box<[PoolActor<T>]>,
+    pub(crate) actors: Box<[PoolActor<T>]>,
     idx: usize,
     generation: usize,
     num: usize,

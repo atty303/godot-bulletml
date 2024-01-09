@@ -52,8 +52,9 @@ impl BulletMLCanvas {
             self.canvas_item = rs.canvas_item_create();
             rs.canvas_item_set_parent(self.canvas_item, canvas_parent);
 
-            for bullet in &self.pool {
-                rs.canvas_item_set_parent(bullet.bullet.bind().canvas_item_rid, self.canvas_item);
+            for pa in &mut self.pool.actors[..] {
+                rs.canvas_item_set_parent(pa.actor.bullet.bind().canvas_item_rid, self.canvas_item);
+                // RenderingServer::singleton().canvas_item_set_parent(b.canvas_item_rid, self.canvas_item);
             }
         }
     }
@@ -94,20 +95,16 @@ impl INode for BulletMLCanvas {
             return;
         }
 
-        // self.swarm.update(|control: &mut SwarmControl<'_, Bullet, ()>| {
-        //     let mut b = control.target().bullet.bind_mut();
-        //     // b.process(control);
-        // });
-
         let (mut current_pool, mut new_pool) = self.pool.split();
         let mut iter = current_pool.into_iter();
         let mut factory = BulletFactory {
             pool: &mut new_pool,
         };
-        while let Some((bullet, bullet_ref)) = iter.next() {
+        let mut rs = RenderingServer::singleton();
+
+        while let Some((bullet, _bullet_ref)) = iter.next() {
             let mut b = bullet.bullet.bind_mut();
-            RenderingServer::singleton().canvas_item_set_parent(b.canvas_item_rid, self.canvas_item);
-            b.process(delta, &mut factory, self.turn);
+            b.process(delta, &mut factory, self.turn, rs.clone());
         }
 
         self.turn += 1;
