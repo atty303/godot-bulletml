@@ -1,7 +1,65 @@
+// 1. Original work from ABA Games
+//
+// The original work can be found at http://www.asahi-net.or.jp/~cs8k-cyu/ and is subject of the following license:
+//
+// Copyright 2004 Kenta Cho. All rights reserved.
+//
+// Redistribution and use in source and binary forms,
+// with or without modification, are permitted provided that
+// the following conditions are met:
+//
+//  1. Redistributions of source code must retain the above copyright notice,
+//     this list of conditions and the following disclaimer.
+//
+//  2. Redistributions in binary form must reproduce the above copyright notice,
+//     this list of conditions and the following disclaimer in the documentation
+//     and/or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+// FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+// OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+// OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+// ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// 2. Rust work
+//
+// The Rust code is subject of the following license:
+//
+// Copyright 2018 Arnaud de Bossoreille. All rights reserved.
+//
+// Redistribution and use in source and binary forms,
+// with or without modification, are permitted provided that
+// the following conditions are met:
+//
+//  1. Redistributions of source code must retain the above copyright notices
+//     about the original work from ABA Games and the Rust work, this list of
+//     conditions and the following disclaimer.
+//
+//  2. Redistributions in binary form must reproduce the above copyright notices
+//     about the original work from ABA Games and the Rust work, this list of
+//     conditions and the following disclaimer in the documentation and/or other
+//     materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES,
+// INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+// FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
+// THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+// PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+// OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+// WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+// OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+// ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 use std::ops::{Index, IndexMut};
 
 pub struct PoolActor<T> {
-    pub(crate) actor: T,
+    actor: T,
     state: ActorState,
 }
 
@@ -17,21 +75,21 @@ pub struct PoolActorRef {
 }
 
 pub struct Pool<T> {
-    pub(crate) actors: Box<[PoolActor<T>]>,
+    actors: Box<[PoolActor<T>]>,
     idx: usize,
     generation: usize,
     num: usize,
 }
 
 impl<T> Pool<T> {
-    pub fn new(n: usize) -> Self
-        where
-            T: Default,
+    pub fn new<F>(n: usize, mut init: F) -> Self
+    where
+        F: FnMut() -> T,
     {
         let mut actors = Vec::with_capacity(n);
         for _ in 0..n {
             actors.push(PoolActor {
-                actor: T::default(),
+                actor: init(),
                 state: ActorState::NotActing,
             });
         }

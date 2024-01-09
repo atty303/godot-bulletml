@@ -29,8 +29,6 @@ impl BulletMLCanvas {
     fn create(&mut self, capacity: u32) {
         self.capacity = capacity;
 
-        self.pool = Pool::new(capacity as usize);
-
         let mut viewport: Option<Gd<Viewport>> = None;
         {
             let mut n: Option<Gd<Node>> = Some(self.to_gd().upcast());
@@ -43,20 +41,20 @@ impl BulletMLCanvas {
             }
         }
 
-        godot_print!("viewport: {:?}", viewport);
         if let Some(viewport) = viewport {
             let canvas_parent = viewport.find_world_2d().unwrap().get_canvas();
-            godot_print!("canvas_parent: {:?}", canvas_parent);
 
-            let mut rs = RenderingServer::singleton();
-            self.canvas_item = rs.canvas_item_create();
-            rs.canvas_item_set_parent(self.canvas_item, canvas_parent);
-
-            for pa in &mut self.pool.actors[..] {
-                rs.canvas_item_set_parent(pa.actor.bullet.bind().canvas_item_rid, self.canvas_item);
-                // RenderingServer::singleton().canvas_item_set_parent(b.canvas_item_rid, self.canvas_item);
-            }
+            self.canvas_item = RenderingServer::singleton().canvas_item_create();
+            RenderingServer::singleton().canvas_item_set_parent(self.canvas_item, canvas_parent);
         }
+
+        let mut rs = RenderingServer::singleton();
+        let canvas_item = self.canvas_item;
+        self.pool = Pool::new(capacity as usize, move || {
+            let b = Bullet::default();
+            rs.canvas_item_set_parent(b.bullet.bind().canvas_item_rid, canvas_item);
+            b
+        });
     }
 
     #[func]
@@ -84,7 +82,7 @@ impl INode for BulletMLCanvas {
             base,
             runs_on_editor: true,
             capacity: 0,
-            pool: Pool::new(0),
+            pool: Pool::new(0, Bullet::default),
             turn: 0,
             canvas_item: Rid::Invalid,
         }
@@ -100,7 +98,7 @@ impl INode for BulletMLCanvas {
         let mut factory = BulletFactory {
             pool: &mut new_pool,
         };
-        let mut rs = RenderingServer::singleton();
+        let rs = RenderingServer::singleton();
 
         while let Some((bullet, _bullet_ref)) = iter.next() {
             let mut b = bullet.bullet.bind_mut();
