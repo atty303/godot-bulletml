@@ -71,22 +71,24 @@ impl BulletMLBullet {
         self.is_simple = false;
     }
 
-    pub fn init_simple(&mut self, _label: &Option<String>, degree: f64, speed: f64) {
+    pub fn init_simple(&mut self, _label: &Option<String>, position: Vector2, degree: f64, speed: f64) {
         RenderingServer::singleton().canvas_item_clear(self.canvas_item_rid);
         RenderingServer::singleton().canvas_item_add_rect(self.canvas_item_rid, Rect2::new(Vector2::ZERO, Vector2::ONE), Color::WHITE);
         self.is_simple = true;
 
+        self.data.position = position;
         self.data.degree = degree;
         self.data.speed = speed;
         self.data.update_velocity();
     }
 
-    pub fn init_from_state(&mut self, _label: &Option<String>, degree: f64, speed: f64, state: bulletml::State) {
+    pub fn init_from_state(&mut self, _label: &Option<String>, position: Vector2, degree: f64, speed: f64, state: bulletml::State) {
         RenderingServer::singleton().canvas_item_clear(self.canvas_item_rid);
         RenderingServer::singleton().canvas_item_add_rect(self.canvas_item_rid, Rect2::new(Vector2::ZERO, Vector2::ONE), Color::WHITE);
         self.is_simple = false;
         self.runner.init_from_state(state);
 
+        self.data.position = position;
         self.data.degree = degree;
         self.data.speed = speed;
         self.data.update_velocity();
@@ -160,11 +162,11 @@ impl<'a, 'm, 'p> bulletml::AppRunner<GodotData<'a, 'm, 'p>> for GodotRunner {
     }
 
     fn create_simple_bullet(&mut self, data: &mut GodotData, direction: f64, speed: f64, label: &Option<String>) {
-        data.factory.create_bullet_simple(label, direction, speed);
+        data.factory.create_bullet_simple(label, data.bullet.position, direction, speed);
     }
 
     fn create_bullet(&mut self, data: &mut GodotData, state: bulletml::State, direction: f64, speed: f64, label: &Option<String>) {
-        data.factory.create_bullet_from_state(label, direction, speed, state);
+        data.factory.create_bullet_from_state(label, data.bullet.position, direction, speed, state);
     }
 
     fn get_turn(&self, data: &GodotData) -> u32 {

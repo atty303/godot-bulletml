@@ -127,17 +127,17 @@ pub(crate) struct BulletFactory<'a, 'p> {
 }
 
 impl<'a, 'p> BulletFactory<'a, 'p> {
-    pub fn create_bullet_simple(&mut self, label: &Option<String>, degree: f64, speed: f64) {
+    pub fn create_bullet_simple(&mut self, label: &Option<String>, position: Vector2, degree: f64, speed: f64) {
         if let Some(actor) = self.pool.get_instance() {
             let mut bullet = actor.0.bullet.bind_mut();
-            bullet.init_simple(label, degree, speed);
+            bullet.init_simple(label, position, degree, speed);
         }
     }
 
-    pub fn create_bullet_from_state(&mut self, label: &Option<String>, degree: f64, speed: f64, state: bulletml::State) {
+    pub fn create_bullet_from_state(&mut self, label: &Option<String>, position: Vector2, degree: f64, speed: f64, state: bulletml::State) {
         if let Some(actor) = self.pool.get_instance() {
             let mut bullet = actor.0.bullet.bind_mut();
-            bullet.init_from_state(label, degree, speed, state);
+            bullet.init_from_state(label, position, degree, speed, state);
         }
     }
 }
