@@ -78,7 +78,7 @@ impl INode2D for BulletMLPlayer {
     fn physics_process(&mut self, _delta: f64) {
         if let (Some(ref mut canvas), Some(top_bullet_ref)) = (&mut self.node, &self.top_bullet_ref) {
             canvas.bind_mut().maybe_index_mut(*top_bullet_ref).map(|bullet| {
-                bullet.bullet.bind_mut().set_transform(Transform2D::IDENTITY.translated(self.base.get_position()));
+                bullet.bind_mut().set_transform(Transform2D::IDENTITY.translated(self.base.get_position()));
             });
 
         }

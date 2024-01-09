@@ -17,7 +17,7 @@ pub struct BulletMLCanvas {
 
     capacity: u32,
 
-    pool: Pool<Bullet>,
+    pool: Pool<Gd<BulletMLBullet>>,
     turn: u32,
 
     canvas_item: Rid,
@@ -51,9 +51,9 @@ impl BulletMLCanvas {
         let mut rs = RenderingServer::singleton();
         let canvas_item = self.canvas_item;
         self.pool = Pool::new(capacity as usize, move || {
-            let b = Bullet::default();
-            rs.canvas_item_set_parent(b.bullet.bind().canvas_item_rid, canvas_item);
-            b
+            let bullet = BulletMLBullet::alloc_gd();
+            rs.canvas_item_set_parent(bullet.bind().canvas_item_rid, canvas_item);
+            bullet
         });
     }
 
@@ -68,16 +68,16 @@ impl BulletMLCanvas {
     }
 
     pub fn create_bullet_new(&mut self, player: Gd<BulletMLPlayer>, bml: Arc<bulletml::BulletML>) -> Option<PoolActorRef> {
-        if let Some((actor, actor_ref)) = self.pool.get_instance() {
-            let mut bullet = actor.bullet.bind_mut();
+        if let Some((bullet, bullet_ref)) = self.pool.get_instance() {
+            let mut bullet = bullet.bind_mut();
             bullet.init_new(player, bml);
-            Some(actor_ref)
+            Some(bullet_ref)
         } else {
             None
         }
     }
 
-    pub(crate) fn maybe_index_mut(&mut self, actor_ref: PoolActorRef) -> Option<&mut Bullet> {
+    pub(crate) fn maybe_index_mut(&mut self, actor_ref: PoolActorRef) -> Option<&mut Gd<BulletMLBullet>> {
         self.pool.maybe_index_mut(actor_ref)
     }
 }
@@ -89,7 +89,7 @@ impl INode for BulletMLCanvas {
             base,
             runs_on_editor: true,
             capacity: 0,
-            pool: Pool::new(0, Bullet::default),
+            pool: Pool::new(0, || BulletMLBullet::alloc_gd()),
             turn: 0,
             canvas_item: Rid::Invalid,
         }
@@ -108,42 +108,28 @@ impl INode for BulletMLCanvas {
         let rs = RenderingServer::singleton();
 
         while let Some((bullet, _bullet_ref)) = iter.next() {
-            let mut b = bullet.bullet.bind_mut();
-            b.process(delta, &mut factory, self.turn, rs.clone());
+            bullet.bind_mut().process(delta, &mut factory, self.turn, rs.clone());
         }
 
         self.turn += 1;
     }
 }
 
-#[derive(Clone)]
-pub(crate) struct Bullet {
-    pub(crate) bullet: Gd<BulletMLBullet>,
-}
-
-impl Default for Bullet {
-    fn default() -> Self {
-        Self {
-            bullet: BulletMLBullet::alloc_gd(),
-        }
-    }
-}
-
 pub(crate) struct BulletFactory<'a, 'p> {
-    pool: &'a mut PoolGetInstanceArea<'p, Bullet>,
+    pool: &'a mut PoolGetInstanceArea<'p, Gd<BulletMLBullet>>,
 }
 
 impl<'a, 'p> BulletFactory<'a, 'p> {
     pub fn create_bullet_simple(&mut self, label: &Option<String>, position: Vector2, degree: f64, speed: f64) {
         if let Some(actor) = self.pool.get_instance() {
-            let mut bullet = actor.0.bullet.bind_mut();
+            let mut bullet = actor.0.bind_mut();
             bullet.init_simple(label, position, degree, speed);
         }
     }
 
     pub fn create_bullet_from_state(&mut self, label: &Option<String>, position: Vector2, degree: f64, speed: f64, state: bulletml::State) {
         if let Some(actor) = self.pool.get_instance() {
-            let mut bullet = actor.0.bullet.bind_mut();
+            let mut bullet = actor.0.bind_mut();
             bullet.init_from_state(label, position, degree, speed, state);
         }
     }
