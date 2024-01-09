@@ -2,6 +2,7 @@ use godot::prelude::*;
 
 use crate::bulletml_canvas::BulletMLCanvas;
 use crate::bulletml_resource::BulletMLResource;
+use crate::pool::PoolActorRef;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -17,6 +18,8 @@ pub struct BulletMLPlayer {
 
     is_playing: bool,
     rank: f64,
+
+    top_bullet_ref: Option<PoolActorRef>,
 }
 
 #[godot_api]
@@ -27,7 +30,7 @@ impl BulletMLPlayer {
         match (&mut self.node, &self.bulletml) {
             (Some(ref mut node), Some(bulletml)) => {
                 self.is_playing = true;
-                node.bind_mut().create_bullet_new(player, bulletml.bind().bml.clone());
+                self.top_bullet_ref = node.bind_mut().create_bullet_new(player, bulletml.bind().bml.clone());
             },
             _ => {},
         }
@@ -40,6 +43,7 @@ impl BulletMLPlayer {
 
     #[func]
     fn reset(&mut self) {
+        self.top_bullet_ref = None;
     }
 
     #[func]
@@ -67,6 +71,16 @@ impl INode2D for BulletMLPlayer {
             bulletml: None,
             is_playing: false,
             rank: 1.0,
+            top_bullet_ref: None,
+        }
+    }
+
+    fn physics_process(&mut self, _delta: f64) {
+        if let (Some(ref mut canvas), Some(top_bullet_ref)) = (&mut self.node, &self.top_bullet_ref) {
+            canvas.bind_mut().maybe_index_mut(*top_bullet_ref).map(|bullet| {
+                bullet.bullet.bind_mut().set_transform(Transform2D::IDENTITY.translated(self.base.get_position()));
+            });
+
         }
     }
 }

@@ -5,7 +5,7 @@ use godot::prelude::*;
 
 use crate::bulletml_bullet::BulletMLBullet;
 use crate::bulletml_player::BulletMLPlayer;
-use crate::pool::{Pool, PoolGetInstanceArea};
+use crate::pool::{Pool, PoolActorRef, PoolGetInstanceArea};
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -67,11 +67,18 @@ impl BulletMLCanvas {
         self.pool.get_num() as u32
     }
 
-    pub fn create_bullet_new(&mut self, player: Gd<BulletMLPlayer>, bml: Arc<bulletml::BulletML>) {
-        if let Some(actor) = self.pool.get_instance() {
-            let mut bullet = actor.0.bullet.bind_mut();
+    pub fn create_bullet_new(&mut self, player: Gd<BulletMLPlayer>, bml: Arc<bulletml::BulletML>) -> Option<PoolActorRef> {
+        if let Some((actor, actor_ref)) = self.pool.get_instance() {
+            let mut bullet = actor.bullet.bind_mut();
             bullet.init_new(player, bml);
+            Some(actor_ref)
+        } else {
+            None
         }
+    }
+
+    pub(crate) fn maybe_index_mut(&mut self, actor_ref: PoolActorRef) -> Option<&mut Bullet> {
+        self.pool.maybe_index_mut(actor_ref)
     }
 }
 

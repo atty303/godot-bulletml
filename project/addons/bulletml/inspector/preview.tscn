@@ -76,7 +76,7 @@ vertical_alignment = 1
 [node name="TurnLabel" type="Label" parent="PlayControl/HBoxContainer"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "285"
+text = "2115"
 vertical_alignment = 1
 
 [connection signal="dragged" from="Grabber" to="." method="_on_grabber_dragged"]

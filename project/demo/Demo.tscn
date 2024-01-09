@@ -4,17 +4,17 @@
 [ext_resource type="BulletMLResource" path="res://demo/examples/hibachi.xml" id="2_8npr6"]
 
 [node name="Demo" type="Node2D"]
-position = Vector2(94, 97)
 script = ExtResource("1_hiuq6")
 
 [node name="BulletMLPlayer" type="BulletMLPlayer" parent="." node_paths=PackedStringArray("node")]
 node = NodePath("../BulletMLCanvas")
 bulletml = ExtResource("2_8npr6")
+position = Vector2(632, 177)
 
 [node name="BulletMLCanvas" type="BulletMLCanvas" parent="."]
 
 [node name="BulletCountLabel" type="Label" parent="."]
-offset_left = -85.0
-offset_top = -88.0
-offset_right = -45.0
-offset_bottom = -65.0
+offset_left = 11.0
+offset_top = 8.0
+offset_right = 51.0
+offset_bottom = 31.0

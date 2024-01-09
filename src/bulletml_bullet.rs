@@ -11,6 +11,7 @@ use crate::bulletml_resource::get_empty_bulletml;
 
 struct BulletData {
     player: Gd<BulletMLPlayer>,
+    transform: Transform2D,
     position: Vector2,
     degree: f64,
     speed: f64,
@@ -27,6 +28,7 @@ impl Default for BulletData {
     fn default() -> Self {
         Self {
             player: BulletMLPlayer::alloc_gd(),
+            transform: Transform2D::IDENTITY,
             position: Vector2::ZERO,
             degree: 0.0,
             speed: 0.0,
@@ -110,9 +112,13 @@ impl BulletMLBullet {
             runner.run(runner_data);
         }
 
-        self.data.position = self.data.position + self.data.velocity;// * (delta as real);
+        self.data.position = self.data.position + self.data.velocity * (delta * 60.0) as real;
 
-        rs.canvas_item_set_transform(self.canvas_item_rid, Transform2D::IDENTITY.translated(self.data.position));
+        rs.canvas_item_set_transform(self.canvas_item_rid, self.data.transform.translated(self.data.position));
+    }
+
+    pub(crate) fn set_transform(&mut self, transform: Transform2D) {
+        self.data.transform = transform;
     }
 }
 
@@ -162,11 +168,11 @@ impl<'a, 'm, 'p> bulletml::AppRunner<GodotData<'a, 'm, 'p>> for GodotRunner {
     }
 
     fn create_simple_bullet(&mut self, data: &mut GodotData, direction: f64, speed: f64, label: &Option<String>) {
-        data.factory.create_bullet_simple(label, data.bullet.position, direction, speed);
+        data.factory.create_bullet_simple(label, data.bullet.transform.origin + data.bullet.position, direction, speed);
     }
 
     fn create_bullet(&mut self, data: &mut GodotData, state: bulletml::State, direction: f64, speed: f64, label: &Option<String>) {
-        data.factory.create_bullet_from_state(label, data.bullet.position, direction, speed, state);
+        data.factory.create_bullet_from_state(label, data.bullet.transform.origin + data.bullet.position, direction, speed, state);
     }
 
     fn get_turn(&self, data: &GodotData) -> u32 {
