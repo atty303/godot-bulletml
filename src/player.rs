@@ -3,6 +3,7 @@ use godot::prelude::*;
 use crate::canvas::BulletMLCanvas;
 use crate::resource::BulletMLResource;
 use crate::pool::PoolActorRef;
+use crate::style::BulletMLStyle;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -16,6 +17,9 @@ pub struct BulletMLPlayer {
     #[export]
     bulletml: Option<Gd<BulletMLResource>>,
 
+    #[export]
+    style: Option<Gd<BulletMLStyle>>,
+
     is_playing: bool,
     rank: f64,
 
@@ -28,10 +32,11 @@ impl BulletMLPlayer {
     fn play(&mut self) {
         let player = self.to_gd();
         match (&mut self.canvas, &self.bulletml) {
-            (Some(ref mut node), Some(bulletml)) => {
+            (Some(ref mut canvas), Some(bulletml)) => {
                 self.is_playing = true;
-                self.top_bullet_ref = node.bind_mut().create_bullet_new(player, bulletml.bind().bml.clone());
-            },
+                let style = self.style.clone().unwrap_or(BulletMLStyle::new_gd());
+                self.top_bullet_ref = canvas.bind_mut().create_bullet_new(player, bulletml.bind().bml.clone(), style);
+            }
             _ => {},
         }
     }
@@ -69,6 +74,7 @@ impl INode2D for BulletMLPlayer {
             base,
             canvas: None,
             bulletml: None,
+            style: None,
             is_playing: false,
             rank: 1.0,
             top_bullet_ref: None,

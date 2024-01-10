@@ -8,6 +8,7 @@ use godot::prelude::*;
 use crate::canvas::BulletFactory;
 use crate::player::BulletMLPlayer;
 use crate::resource::get_empty_bulletml;
+use crate::style::BulletMLStyle;
 
 struct BulletData {
     player: Gd<BulletMLPlayer>,
@@ -64,18 +65,16 @@ impl BulletMLBullet {
         }
     }
 
-    pub fn init_new(&mut self, player: Gd<BulletMLPlayer>, bml: Arc<bulletml::BulletML>) {
-        RenderingServer::singleton().canvas_item_clear(self.canvas_item_rid);
-        RenderingServer::singleton().canvas_item_add_rect(self.canvas_item_rid, Rect2::new(Vector2::ZERO, Vector2::ONE), Color::WHITE);
+    pub fn init_new(&mut self, player: Gd<BulletMLPlayer>, bml: Arc<bulletml::BulletML>, style: Gd<BulletMLStyle>) {
+        self.apply_style(style);
         self.is_simple = false;
         self.data.player = player;
         self.data.bml = bml.clone();
         self.runner.init(bml.deref());
     }
 
-    pub fn init_simple(&mut self, bml: &Arc<bulletml::BulletML>, _label: &Option<String>, position: Vector2, degree: f64, speed: f64) {
-        RenderingServer::singleton().canvas_item_clear(self.canvas_item_rid);
-        RenderingServer::singleton().canvas_item_add_rect(self.canvas_item_rid, Rect2::new(Vector2::ZERO, Vector2::ONE), Color::WHITE);
+    pub fn init_simple(&mut self, bml: &Arc<bulletml::BulletML>, style: Gd<BulletMLStyle>, position: Vector2, degree: f64, speed: f64) {
+        self.apply_style(style);
         self.is_simple = true;
         self.data.bml = bml.clone();
         self.data.position = position;
@@ -84,9 +83,8 @@ impl BulletMLBullet {
         self.data.update_velocity();
     }
 
-    pub fn init_from_state(&mut self, bml: &Arc<bulletml::BulletML>, _label: &Option<String>, position: Vector2, degree: f64, speed: f64, state: bulletml::State) {
-        RenderingServer::singleton().canvas_item_clear(self.canvas_item_rid);
-        RenderingServer::singleton().canvas_item_add_rect(self.canvas_item_rid, Rect2::new(Vector2::ZERO, Vector2::ONE), Color::WHITE);
+    pub fn init_from_state(&mut self, bml: &Arc<bulletml::BulletML>, style: Gd<BulletMLStyle>, position: Vector2, degree: f64, speed: f64, state: bulletml::State) {
+        self.apply_style(style);
         self.is_simple = false;
         self.data.bml = bml.clone();
         self.data.position = position;
@@ -119,6 +117,13 @@ impl BulletMLBullet {
 
     pub(crate) fn set_transform(&mut self, transform: Transform2D) {
         self.data.transform = transform;
+    }
+
+    fn apply_style(&mut self, style: Gd<BulletMLStyle>) {
+        let style = style.bind();
+        let mut rs = RenderingServer::singleton();
+        rs.canvas_item_clear(self.canvas_item_rid);
+        rs.canvas_item_add_rect(self.canvas_item_rid, Rect2::new(Vector2::ZERO, Vector2::ONE), Color::WHITE);
     }
 }
 
@@ -167,12 +172,14 @@ impl<'a, 'm, 'p> bulletml::AppRunner<GodotData<'a, 'm, 'p>> for GodotRunner {
         data.bullet.player.bind().get_rank()
     }
 
-    fn create_simple_bullet(&mut self, data: &mut GodotData, direction: f64, speed: f64, label: &Option<String>) {
-        data.factory.create_bullet_simple(&data.bullet.bml, label, data.bullet.transform.origin + data.bullet.position, direction, speed);
+    fn create_simple_bullet(&mut self, data: &mut GodotData, direction: f64, speed: f64, _label: &Option<String>) {
+        let style = data.bullet.player.bind().get_style().unwrap_or(BulletMLStyle::new_gd());
+        data.factory.create_bullet_simple(&data.bullet.bml, style, data.bullet.transform.origin + data.bullet.position, direction, speed);
     }
 
-    fn create_bullet(&mut self, data: &mut GodotData, state: bulletml::State, direction: f64, speed: f64, label: &Option<String>) {
-        data.factory.create_bullet_from_state(&data.bullet.bml, label, data.bullet.transform.origin + data.bullet.position, direction, speed, state);
+    fn create_bullet(&mut self, data: &mut GodotData, state: bulletml::State, direction: f64, speed: f64, _label: &Option<String>) {
+        let style = data.bullet.player.bind().get_style().unwrap_or(BulletMLStyle::new_gd());
+        data.factory.create_bullet_from_state(&data.bullet.bml, style, data.bullet.transform.origin + data.bullet.position, direction, speed, state);
     }
 
     fn get_turn(&self, data: &GodotData) -> u32 {

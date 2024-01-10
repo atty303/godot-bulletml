@@ -6,6 +6,7 @@ use godot::prelude::*;
 use crate::bullet::BulletMLBullet;
 use crate::player::BulletMLPlayer;
 use crate::pool::{Pool, PoolActorRef, PoolGetInstanceArea};
+use crate::style::BulletMLStyle;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -67,10 +68,10 @@ impl BulletMLCanvas {
         self.pool.get_num() as u32
     }
 
-    pub fn create_bullet_new(&mut self, player: Gd<BulletMLPlayer>, bml: Arc<bulletml::BulletML>) -> Option<PoolActorRef> {
+    pub fn create_bullet_new(&mut self, player: Gd<BulletMLPlayer>, bml: Arc<bulletml::BulletML>, style: Gd<BulletMLStyle>) -> Option<PoolActorRef> {
         if let Some((bullet, bullet_ref)) = self.pool.get_instance() {
             let mut bullet = bullet.bind_mut();
-            bullet.init_new(player, bml);
+            bullet.init_new(player, bml, style);
             Some(bullet_ref)
         } else {
             None
@@ -122,17 +123,17 @@ pub(crate) struct BulletFactory<'a, 'p> {
 }
 
 impl<'a, 'p> BulletFactory<'a, 'p> {
-    pub fn create_bullet_simple(&mut self, bml: &Arc<bulletml::BulletML>, label: &Option<String>, position: Vector2, degree: f64, speed: f64) {
+    pub fn create_bullet_simple(&mut self, bml: &Arc<bulletml::BulletML>, style: Gd<BulletMLStyle>, position: Vector2, degree: f64, speed: f64) {
         if let Some(actor) = self.pool.get_instance() {
             let mut bullet = actor.0.bind_mut();
-            bullet.init_simple(bml, label, position, degree, speed);
+            bullet.init_simple(bml, style, position, degree, speed);
         }
     }
 
-    pub fn create_bullet_from_state(&mut self, bml: &Arc<bulletml::BulletML>, label: &Option<String>, position: Vector2, degree: f64, speed: f64, state: bulletml::State) {
+    pub fn create_bullet_from_state(&mut self, bml: &Arc<bulletml::BulletML>, style: Gd<BulletMLStyle>, position: Vector2, degree: f64, speed: f64, state: bulletml::State) {
         if let Some(actor) = self.pool.get_instance() {
             let mut bullet = actor.0.bind_mut();
-            bullet.init_from_state(bml, label, position, degree, speed, state);
+            bullet.init_from_state(bml, style, position, degree, speed, state);
         }
     }
 }

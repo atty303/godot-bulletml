@@ -11,6 +11,7 @@ mod pool;
 mod bullet;
 mod player;
 mod resource;
+mod style;
 
 thread_local! {
     static BULLETML_RESOURCE_FORMAT_LOADER: RefCell<Option<Gd<BulletMLResourceFormatLoader>>> = RefCell::new(None);
