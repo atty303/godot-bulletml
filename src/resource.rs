@@ -57,7 +57,7 @@ impl IResourceFormatLoader for BulletMLResourceFormatLoader {
     fn init(base: Base<Self::Base>) -> Self {
         Self {
             base,
-            refs_capacity: 16,
+            refs_capacity: 1024,
             expr_capacity: 1024,
         }
     }

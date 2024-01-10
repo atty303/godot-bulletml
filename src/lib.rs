@@ -34,7 +34,7 @@ unsafe impl ExtensionLibrary for BulletMLExtension {
             InitLevel::Scene => {
                 godot_print!("init");
                 // auto_register_classes();
-                let loader = Gd::<BulletMLResourceFormatLoader>::from_init_fn(|base| BulletMLResourceFormatLoader::new(base, 16, 1024));
+                let loader = Gd::<BulletMLResourceFormatLoader>::from_init_fn(|base| BulletMLResourceFormatLoader::new(base, 1024, 1024));
 
                 BULLETML_RESOURCE_FORMAT_LOADER.with(|l| {
                     l.replace(Some(loader.clone()));
