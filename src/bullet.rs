@@ -120,10 +120,7 @@ impl BulletMLBullet {
     }
 
     fn apply_style(&mut self, style: Gd<BulletMLStyle>) {
-        let style = style.bind();
-        let mut rs = RenderingServer::singleton();
-        rs.canvas_item_clear(self.canvas_item_rid);
-        rs.canvas_item_add_rect(self.canvas_item_rid, Rect2::new(Vector2::ZERO, Vector2::ONE), Color::WHITE);
+        style.bind().apply(self.canvas_item_rid);
     }
 }
 
